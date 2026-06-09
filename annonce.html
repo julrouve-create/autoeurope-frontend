@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoEurope — Annonce</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+:root{
+  --red:#e52535;--red2:#c41e2c;--red-lt:rgba(229,37,53,.08);
+  --ink:#111318;--ink2:#1e2330;
+  --blue:#1d4ed8;--blue-lt:#eff6ff;
+  --green:#16a34a;--green-lt:#f0fdf4;
+  --amber:#d97706;--amber-lt:#fffbeb;
+  --gray:#64748b;--gray2:#94a3b8;--gray-lt:#f8fafc;
+  --border:#e8ecf0;--border2:#d1d9e0;
+  --surf:#fff;--page:#f4f6f9;
+  --r:8px;--rl:12px;--rxl:16px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'DM Sans',sans-serif;background:var(--page);color:var(--ink);font-size:14px;line-height:1.6;-webkit-font-smoothing:antialiased}
+button{cursor:pointer;font-family:inherit;border:none;background:none}
+img{display:block;max-width:100%}
+
+/* ══ TOP NAV ══ */
+.topnav{background:#fff;border-bottom:1px solid var(--border);height:52px;display:flex;align-items:center;padding:0 20px;gap:12px;position:sticky;top:0;z-index:200;box-shadow:0 1px 3px rgba(0,0,0,.05)}
+.tn-back{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:500;color:var(--gray);cursor:pointer;padding:6px 10px;border-radius:var(--r);transition:all .15s}
+.tn-back:hover{background:var(--gray-lt);color:var(--ink)}
+.tn-back i{font-size:17px}
+.tn-breadcrumb{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--gray2);flex:1}
+.tn-breadcrumb span{cursor:pointer}
+.tn-breadcrumb span:hover{color:var(--ink)}
+.tn-breadcrumb .sep{color:var(--border2)}
+.tn-actions{display:flex;gap:6px;flex-shrink:0}
+.tn-btn{width:36px;height:36px;border-radius:var(--r);border:1px solid var(--border);background:#fff;color:var(--gray);font-size:17px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .15s}
+.tn-btn:hover{border-color:var(--red);color:var(--red)}
+.tn-btn.faved{background:var(--red);border-color:var(--red);color:#fff}
+
+/* ══ LAYOUT ══ */
+.page-layout{max-width:1240px;margin:0 auto;padding:20px 20px 40px;display:grid;grid-template-columns:1fr 360px;gap:20px;align-items:start}
+
+/* ══ LEFT COLUMN ══ */
+.left-col{display:flex;flex-direction:column;gap:16px}
+
+/* ══ GALLERY ══ */
+.gallery-card{background:#111;border-radius:var(--rxl);overflow:hidden;position:relative}
+.gal-main{position:relative;height:480px;overflow:hidden;cursor:zoom-in}
+.gal-main img{width:100%;height:100%;object-fit:contain;background:#111;transition:transform .3s}
+.gal-main:hover img{transform:scale(1.02)}
+.gal-src{position:absolute;top:14px;left:14px;background:rgba(0,0,0,.65);color:#fff;font-size:10px;font-weight:700;padding:4px 10px;border-radius:6px;letter-spacing:.3px;backdrop-filter:blur(4px);z-index:2}
+.gal-score{position:absolute;top:14px;right:14px;background:var(--red);color:#fff;font-size:10px;font-weight:700;padding:4px 12px;border-radius:20px;display:flex;align-items:center;gap:5px;z-index:2}
+.gal-counter{position:absolute;bottom:14px;right:14px;background:rgba(0,0,0,.6);color:#fff;font-size:11px;padding:4px 10px;border-radius:20px;backdrop-filter:blur(4px);display:flex;align-items:center;gap:5px;z-index:2}
+.gal-nav{position:absolute;top:50%;transform:translateY(-50%);width:40px;height:40px;background:rgba(255,255,255,.92);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--ink);cursor:pointer;z-index:3;transition:all .15s;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.gal-nav:hover{background:#fff;transform:translateY(-50%) scale(1.08)}
+.gal-prev{left:14px}
+.gal-next{right:14px}
+/* Thumbnail strip */
+.gal-thumbs{display:flex;gap:6px;padding:10px 12px;background:#1a1a1a;overflow-x:auto;scrollbar-width:none}
+.gal-thumbs::-webkit-scrollbar{display:none}
+.gal-thumb{width:80px;height:58px;flex-shrink:0;border-radius:7px;overflow:hidden;cursor:pointer;border:2px solid transparent;opacity:.55;transition:all .18s}
+.gal-thumb.on{border-color:var(--red);opacity:1}
+.gal-thumb:hover:not(.on){opacity:.85;border-color:rgba(255,255,255,.3)}
+.gal-thumb img{width:100%;height:100%;object-fit:cover}
+/* Dots */
+.gal-dots{position:absolute;bottom:14px;left:50%;transform:translateX(-50%);display:flex;gap:5px;z-index:2}
+.gdot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.4);transition:all .2s;cursor:pointer}
+.gdot.on{width:18px;border-radius:3px;background:#fff}
+
+/* ══ INFO CARD ══ */
+.info-card{background:#fff;border-radius:var(--rxl);border:1px solid var(--border);overflow:hidden}
+.ic-header{padding:18px 20px 14px;border-bottom:1px solid var(--border)}
+.ic-make{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:var(--gray);margin-bottom:3px}
+.ic-title{font-size:22px;font-weight:700;color:var(--ink);letter-spacing:-.4px;line-height:1.2}
+.ic-version{font-size:13px;color:var(--gray);font-weight:300;margin-top:3px}
+/* Torque score inline */
+.ic-score-row{display:flex;align-items:center;gap:10px;padding:10px 20px;background:var(--red-lt);border-bottom:1px solid rgba(229,37,53,.1)}
+.ic-score-num{font-family:'Syne',sans-serif;font-size:28px;font-weight:800;color:var(--red);line-height:1;flex-shrink:0}
+.ic-score-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--red);opacity:.7}
+.ic-score-bars{flex:1;display:flex;flex-direction:column;gap:4px}
+.ic-bar-row{display:flex;align-items:center;gap:6px;font-size:11px}
+.ic-bar-lbl{color:var(--gray);min-width:68px;display:flex;align-items:center;gap:3px}
+.ic-bar-lbl i{font-size:11px}
+.ic-bar{flex:1;height:3px;background:rgba(229,37,53,.12);border-radius:2px;overflow:hidden}
+.ic-bar-fill{height:100%;border-radius:2px}
+.ic-bar-val{font-size:10px;font-weight:700;white-space:nowrap;min-width:28px;text-align:right}
+.ic-reason{font-size:11px;color:var(--gray);font-style:italic;padding-top:5px;border-top:1px solid rgba(229,37,53,.08);line-height:1.5}
+/* Key specs strip */
+.ic-specs{display:grid;grid-template-columns:repeat(4,1fr);border-bottom:1px solid var(--border)}
+.ic-spec{padding:12px 8px;text-align:center;border-right:1px solid var(--border);display:flex;flex-direction:column;align-items:center;gap:3px}
+.ic-spec:last-child{border-right:none}
+.ic-spec-icon{font-size:18px;color:var(--gray)}
+.ic-spec-val{font-size:13px;font-weight:600;color:var(--ink)}
+.ic-spec-lbl{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.7px;color:var(--gray2)}
+/* History badges */
+.ic-badges{display:flex;flex-wrap:wrap;gap:6px;padding:12px 20px;border-bottom:1px solid var(--border)}
+.ibadge{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:500;padding:4px 10px;border-radius:7px}
+.ibadge i{font-size:12px}
+.ib-green{background:var(--green-lt);color:var(--green)}
+.ib-blue{background:var(--blue-lt);color:var(--blue)}
+.ib-amber{background:var(--amber-lt);color:var(--amber)}
+.ib-red{background:#fef2f2;color:#991b1b}
+/* Description */
+.ic-desc{padding:14px 20px;font-size:13px;color:var(--gray);font-weight:300;line-height:1.8;border-bottom:1px solid var(--border)}
+.ic-desc-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gray);margin-bottom:8px}
+/* Full specs table */
+.ic-table{padding:0 20px 14px}
+.ic-table-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gray);padding:14px 0 10px}
+.spec-table{width:100%;border-collapse:collapse}
+.spec-table tr{border-bottom:1px solid var(--border)}
+.spec-table tr:last-child{border-bottom:none}
+.spec-table td{padding:8px 0;font-size:13px}
+.spec-table td:first-child{color:var(--gray);font-weight:300;width:50%}
+.spec-table td:last-child{font-weight:500;color:var(--ink)}
+/* TCO */
+.ic-tco{padding:14px 20px;background:var(--gray-lt);border-top:1px solid var(--border)}
+.ic-tco-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gray);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.tco-table{width:100%;border-collapse:collapse;font-size:13px}
+.tco-table td{padding:6px 0;border-bottom:1px solid var(--border)}
+.tco-table tr:last-child td{border-bottom:none;font-weight:700;font-size:14px;padding-top:10px}
+.tco-table td:last-child{text-align:right;color:var(--ink)}
+.tco-table td:first-child{color:var(--gray);font-weight:300}
+.tco-table tr:last-child td:last-child{color:var(--red)}
+
+/* ══ SIMILAR SECTION ══ */
+.section-title{font-size:16px;font-weight:700;color:var(--ink);letter-spacing:-.2px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.section-title i{font-size:18px;color:var(--gray)}
+.similar-row{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;padding-bottom:4px}
+.similar-row::-webkit-scrollbar{display:none}
+.sim-card{flex-shrink:0;width:190px;background:#fff;border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;cursor:pointer;transition:all .15s}
+.sim-card:hover{border-color:var(--red);transform:translateY(-2px);box-shadow:0 4px 16px rgba(0,0,0,.08)}
+.sim-img{height:110px;background:#e8eef5;overflow:hidden;position:relative}
+.sim-img img{width:100%;height:100%;object-fit:cover;transition:transform .3s}
+.sim-card:hover .sim-img img{transform:scale(1.05)}
+.sim-score{position:absolute;top:7px;right:7px;background:var(--red);color:#fff;font-size:9px;font-weight:700;padding:2px 7px;border-radius:10px}
+.sim-body{padding:10px 12px}
+.sim-make{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--gray)}
+.sim-model{font-size:13px;font-weight:700;color:var(--ink);margin-top:1px;letter-spacing:-.1px}
+.sim-sub{font-size:11px;color:var(--gray);font-weight:300;margin-top:1px}
+.sim-price{font-size:16px;font-weight:700;color:var(--ink);margin-top:6px;letter-spacing:-.3px;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif}
+.sim-rel{font-size:10px;color:var(--gray);margin-top:1px}
+
+/* ══ RIGHT COLUMN — STICKY ══ */
+.right-col{display:flex;flex-direction:column;gap:14px;position:sticky;top:72px}
+
+/* Price card */
+.price-card{background:#fff;border-radius:var(--rxl);border:1px solid var(--border);overflow:hidden}
+.pc-top{padding:18px 20px 14px;border-bottom:1px solid var(--border)}
+.pc-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gray);margin-bottom:6px}
+.pc-price{font-size:36px;font-weight:700;color:var(--ink);letter-spacing:-.5px;line-height:1;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif}
+.pc-price-sub{font-size:12px;color:var(--gray);margin-top:4px;display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.pc-good{display:inline-flex;align-items:center;gap:4px;background:var(--green-lt);color:var(--green);font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px}
+.pc-good i{font-size:12px}
+.pc-btns{padding:14px 20px;display:flex;flex-direction:column;gap:8px}
+.pc-btn-main{background:var(--red);color:#fff;border:none;border-radius:var(--r);padding:14px;font-size:14px;font-weight:700;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;transition:all .15s}
+.pc-btn-main:hover{background:var(--red2);transform:translateY(-1px);box-shadow:0 4px 14px rgba(229,37,53,.3)}
+.pc-btn-main i{font-size:16px}
+.pc-btn-sec{background:#fff;color:var(--ink);border:1.5px solid var(--border2);border-radius:var(--r);padding:12px;font-size:13px;font-weight:600;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:7px;cursor:pointer;transition:all .15s}
+.pc-btn-sec:hover{border-color:var(--red);color:var(--red)}
+.pc-btn-fav{background:#fff;color:var(--gray);border:1.5px solid var(--border2);border-radius:var(--r);padding:11px;font-size:13px;font-weight:600;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:7px;cursor:pointer;transition:all .15s}
+.pc-btn-fav:hover{border-color:var(--red);color:var(--red)}
+.pc-btn-fav.on{background:var(--red-lt);border-color:var(--red);color:var(--red)}
+.pc-btn-torque{background:var(--ink);color:#fff;border:none;border-radius:var(--r);padding:12px;font-size:13px;font-weight:600;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:7px;cursor:pointer;transition:all .15s}
+.pc-btn-torque:hover{background:#2d1a1e}
+.pc-btn-torque .t-badge{background:var(--red);font-family:'Syne',sans-serif;font-size:11px;font-weight:800;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.pc-source{padding:12px 20px;background:var(--gray-lt);border-top:1px solid var(--border);font-size:12px;color:var(--gray);display:flex;align-items:center;gap:8px}
+.pc-source strong{color:var(--ink)}
+
+/* Reliability card */
+.rel-card{background:#fff;border-radius:var(--rxl);border:1px solid var(--border);padding:16px 18px}
+.rel-card-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gray);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.rel-card-title i{font-size:14px}
+.rel-main{display:flex;align-items:center;gap:14px;margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.rel-num{font-family:'Syne',sans-serif;font-size:40px;font-weight:800;color:var(--green);line-height:1;flex-shrink:0}
+.rel-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--green);opacity:.8}
+.rel-bar-wrap{flex:1}
+.rel-bar-bg{height:6px;background:#e2e8f0;border-radius:3px;overflow:hidden;margin:6px 0}
+.rel-bar-fill{height:100%;border-radius:3px;background:var(--green)}
+.rel-rows{display:flex;flex-direction:column;gap:5px}
+.rel-row{display:flex;justify-content:space-between;font-size:12px}
+.rel-row span:first-child{color:var(--gray);font-weight:300}
+.rel-row span:last-child{font-weight:600;color:var(--ink)}
+
+/* Import info card */
+.import-card{background:linear-gradient(135deg,#fffbeb,#fff7ed);border:1px solid #fed7aa;border-radius:var(--rxl);padding:14px 16px}
+.import-card-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--amber);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.import-rows{display:flex;flex-direction:column;gap:7px}
+.import-row{display:flex;align-items:center;gap:9px;font-size:12px}
+.import-row i{font-size:16px;color:var(--amber);flex-shrink:0}
+.import-row-text{flex:1}
+.import-row-text strong{color:var(--ink);font-weight:600}
+.import-row-text span{color:var(--gray);font-weight:300}
+.import-total{margin-top:10px;padding-top:10px;border-top:1px solid #fed7aa;display:flex;justify-content:space-between;font-size:13px;font-weight:600;color:var(--ink)}
+
+/* Seller card */
+.seller-card{background:#fff;border-radius:var(--rxl);border:1px solid var(--border);padding:16px 18px}
+.seller-card-title{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gray);margin-bottom:12px;display:flex;align-items:center;gap:6px}
+.seller-card-title i{font-size:14px}
+.seller-info{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.seller-ava{width:44px;height:44px;border-radius:50%;background:var(--ink);display:flex;align-items:center;justify-content:center;color:#fff;font-size:19px;font-weight:700;flex-shrink:0}
+.seller-name{font-size:14px;font-weight:600;color:var(--ink)}
+.seller-type{font-size:11px;color:var(--gray);font-weight:300;margin-top:1px}
+.seller-rating{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--amber);margin-top:2px}
+.seller-stats{display:flex;gap:0;border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.ss-item{flex:1;text-align:center;padding:9px 8px;border-right:1px solid var(--border)}
+.ss-item:last-child{border-right:none}
+.ss-num{font-size:14px;font-weight:700;color:var(--ink)}
+.ss-lbl{font-size:9px;font-weight:600;text-transform:uppercase;letter-spacing:.5px;color:var(--gray);margin-top:1px}
+
+/* Torque AI chat */
+.torque-card{background:var(--ink);border-radius:var(--rxl);overflow:hidden}
+.tc-header{padding:14px 16px;display:flex;align-items:center;gap:10px;border-bottom:1px solid rgba(255,255,255,.08)}
+.tc-ava{width:34px;height:34px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:14px;font-weight:800;color:#fff;flex-shrink:0}
+.tc-name{color:#fff;font-size:13px;font-weight:600}
+.tc-stat{color:rgba(255,255,255,.4);font-size:10px;display:flex;align-items:center;gap:4px;margin-top:1px}
+.tc-dot{width:5px;height:5px;border-radius:50%;background:#22c55e}
+.tc-msgs{padding:12px 14px;display:flex;flex-direction:column;gap:8px;max-height:200px;overflow-y:auto;background:rgba(255,255,255,.03)}
+.tc-msgs::-webkit-scrollbar{display:none}
+.tcm{display:flex;gap:7px}
+.tcm.u{flex-direction:row-reverse}
+.tcm-bbl{padding:8px 12px;border-radius:10px;font-size:12px;line-height:1.55;font-weight:300;max-width:88%}
+.tcm.bot .tcm-bbl{background:rgba(255,255,255,.1);color:rgba(255,255,255,.85);border-radius:3px 10px 10px 10px}
+.tcm.u .tcm-bbl{background:var(--blue);color:#fff;border-radius:10px 3px 10px 10px}
+.tc-av{width:24px;height:24px;border-radius:50%;background:var(--red);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:10px;font-weight:800;color:#fff;flex-shrink:0;margin-top:2px}
+.tc-qr{display:flex;gap:5px;overflow-x:auto;padding:8px 14px;border-top:1px solid rgba(255,255,255,.06);scrollbar-width:none}
+.tc-qr::-webkit-scrollbar{display:none}
+.tc-qr-btn{flex-shrink:0;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:4px 11px;font-size:10px;color:rgba(255,255,255,.7);font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .15s}
+.tc-qr-btn:hover{background:var(--red);color:#fff;border-color:var(--red)}
+.tc-input-row{display:flex;padding:10px 12px;gap:8px;background:rgba(0,0,0,.2);border-top:1px solid rgba(255,255,255,.06)}
+.tc-input{flex:1;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:8px;padding:8px 12px;font-size:13px;font-family:inherit;color:#fff;outline:none;transition:border .15s}
+.tc-input:focus{border-color:var(--red);background:rgba(255,255,255,.1)}
+.tc-input::placeholder{color:rgba(255,255,255,.3)}
+.tc-send{background:var(--red);border:none;border-radius:8px;width:36px;height:36px;color:#fff;font-size:16px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+.tdots{display:flex;gap:3px;align-items:center}
+.td{width:5px;height:5px;border-radius:50%;background:rgba(255,255,255,.4);animation:tda 1.2s infinite}
+.td:nth-child(2){animation-delay:.2s}.td:nth-child(3){animation-delay:.4s}
+@keyframes tda{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+
+/* ══ MOBILE ══ */
+@media(max-width:900px){
+  .page-layout{grid-template-columns:1fr;padding:12px}
+  .right-col{position:static}
+  .gal-main{height:300px}
+  .gal-nav{display:none}
+  .ic-specs{grid-template-columns:repeat(3,1fr)}
+  .page-layout .right-col{order:-1}
+}
+
+
+/* Loading/error */
+.page-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;gap:16px;color:var(--gray)}
+.page-loading i{font-size:36px;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.page-error{text-align:center;padding:80px 24px}
+.page-error i{font-size:52px;color:var(--gray);opacity:.3;display:block;margin:0 auto 12px}
+.page-error h2{font-size:20px;font-weight:700;color:var(--ink);margin-bottom:8px}
+.page-error p{font-size:14px;color:var(--gray);font-weight:300;margin-bottom:20px}
+.page-error a{background:var(--red);color:#fff;border-radius:var(--r);padding:12px 24px;font-size:14px;font-weight:600;text-decoration:none;display:inline-flex;align-items:center;gap:8px}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:13px;font-weight:500;padding:10px 18px;border-radius:var(--r);box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:9999;display:none;white-space:nowrap}
+
+
+
+
+
+
+
+.mobile-bottom-nav{display:none}
+
+@media(max-width:768px){
+  .topbar,.annonce-topbar{padding:8px 12px}
+  .topbar .tb-nav,.hn-nav{display:none !important}
+  .page-layout{grid-template-columns:1fr !important;padding:0 !important;gap:0}
+  .gal-main{height:260px !important}
+  .gal-thumbs{padding:8px 10px;gap:5px;overflow-x:auto}
+  .gal-thumb{width:52px !important;height:40px !important;flex-shrink:0}
+  .ic-body,.info-card{padding:14px 13px}
+  .ic-model{font-size:20px}
+  .ic-score-num{font-size:28px}
+  .ic-specs{grid-template-columns:repeat(2,1fr) !important;gap:1px}
+  .price-card{position:static !important;top:auto !important}
+  .detail-sidebar,.sidebar-sticky{display:none !important}
+  .tc-msgs{max-height:160px}
+  .similar-scroll{padding:0 12px}
+  body{padding-bottom:70px !important}
+  .mobile-bottom-nav{display:flex !important;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);padding:8px 0 calc(8px + env(safe-area-inset-bottom,0px));z-index:200;justify-content:space-around}
+  .mbn-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--gray);font-size:10px;font-weight:500;cursor:pointer;padding:2px 10px;flex:1}
+  .mbn-item.on{color:var(--red)}
+  .mbn-item i{font-size:22px}
+}
+</style>
+</head>
+<body>
+<div id="app"><div class="page-loading"><i class="ti ti-loader"></i>Chargement de l'annonce…</div></div>
+<div class="toast" id="toast"></div>
+<script>
+const API='https://autoeurope-backend-production.up.railway.app';
+var CAR_IMAGES={'volkswagen golf':'https://images.unsplash.com/photo-1471479917193-f00955256257?w=1200&q=85','volkswagen polo':'https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1200&q=85','toyota yaris':'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?w=1200&q=85','toyota auris':'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?w=1200&q=85','honda jazz':'https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=1200&q=85','skoda octavia':'https://images.unsplash.com/photo-1616788494707-ec28f08d05a1?w=1200&q=85','dacia sandero':'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?w=1200&q=85','seat leon':'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1200&q=85','renault clio':'https://images.unsplash.com/photo-1542362567-b07e54358753?w=1200&q=85','peugeot 308':'https://images.unsplash.com/photo-1609521263047-f8f205293f24?w=1200&q=85','ford focus':'https://images.unsplash.com/photo-1551952237-954f0aef2039?w=1200&q=85','bmw serie 1':'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=1200&q=85','audi a3':'https://images.unsplash.com/photo-1606664515524-ed2f786a0bd6?w=1200&q=85','hyundai i30':'https://images.unsplash.com/photo-1629897048514-3dd7414fe72a?w=1200&q=85','mazda 3':'https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=1200&q=85'};
+var DEF_IMG=['https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=1200&q=85','https://images.unsplash.com/photo-1494976388531-d1058494cdd8?w=1200&q=85','https://images.unsplash.com/photo-1502877338535-766e1452684a?w=1200&q=85'];
+function getCarImage(make,model){var k=((make||'')+' '+(model||'')).toLowerCase().replace('série','serie');if(CAR_IMAGES[k])return CAR_IMAGES[k];for(var x in CAR_IMAGES){if(x.startsWith((make||'').toLowerCase()))return CAR_IMAGES[x];}return DEF_IMG[0];}
+
+var authToken=null,authUser=null;
+try{var _s=sessionStorage.getItem('ae_auth');if(_s){var _p=JSON.parse(_s);authToken=_p.token;authUser=_p.user;}}catch(e){}
+
+var PHOTOS=[],galCur=0,isFaved=false;
+var annonceId=new URLSearchParams(window.location.search).get('id');
+
+async function loadAnnonce(){
+  if(!annonceId){showError('Annonce introuvable','Aucun identifiant fourni.');return;}
+  try{
+    var res=await fetch(API+'/api/annonces/'+annonceId);
+    if(!res.ok)throw new Error('HTTP '+res.status);
+    var data=await res.json();
+    render(normalize(data.annonce||data));
+  }catch(e){
+    // Fallback: search by id
+    try{
+      var res2=await fetch(API+'/api/search?limit=1');
+      var data2=await res2.json();
+      var found=(data2.annonces||[]).find(function(a){return String(a.id)===String(annonceId);});
+      if(found)render(normalize(found));
+      else showError('Annonce introuvable','Cette annonce a peut-être été supprimée.');
+    }catch(e2){showError('Erreur de connexion','Impossible de charger cette annonce.');}
+  }
+}
+
+function normalize(a){
+  var flags={FR:'🇫🇷',DE:'🇩🇪',PL:'🇵🇱',BE:'🇧🇪',ES:'🇪🇸',IT:'🇮🇹',CZ:'🇨🇿',GB:'🇬🇧'};
+  var flag=flags[a.source_country]||'🌍';
+  var photos=(a.photos&&a.photos.length)?a.photos:(function(){var m=getCarImage(a.make,a.model);return [m].concat(DEF_IMG.filter(function(u){return u!==m;}));})();
+  var bodyMap={hatchback:'Berline 5p',sedan:'Berline 4p',estate:'Break',suv:'SUV/4x4',coupe:'Coupé',convertible:'Cabriolet',van:'Monospace'};
+  return{
+    id:a.id,make:a.make||'—',model:a.model||'—',version:a.version||'—',
+    year:a.year||'—',km:a.km||0,price:a.price||0,
+    fuel:(a.fuel_type||a.fuel||'essence'),gearbox:a.gearbox||null,
+    power:a.power_hp||null,body:a.body_type?(bodyMap[(a.body_type||'').toLowerCase()]||a.body_type):null,
+    color:a.color||null,doors:a.doors||null,consumption:a.consumption||null,
+    city:a.city||'—',country:a.source_country||'EU',flag:flag,
+    src:a.source||'AutoEurope',source_url:a.source_url||null,
+    score:a.torque_score||a.score||75,rel:a.reliability_tuv||a.reliability||75,
+    ps:a.price_score||1,reason:a.reason||null,
+    photos:photos,description:a.description||null,
+    seller_name:a.seller_name||null,seller_type:a.seller_type||null,seller_rating:a.seller_rating||null,
+    has_ct:!!a.has_ct,is_first_owner:!!a.is_first_owner,is_accident_free:!!a.is_accident_free,
+    has_service_book:!!a.has_service_book,carvertical:!!a.carvertical_verified,
+    first_seen_at:a.first_seen_at||null,
+  };
+}
+
+function render(c){
+  document.title='AutoEurope — '+c.make+' '+c.model;
+  PHOTOS=c.photos; galCur=0;
+
+  var sc=c.score;
+  var s_crit=Math.min(Math.round(sc*.4),40),s_fiab=Math.min(Math.round(c.rel*.3),30);
+  var s_prix=Math.min(Math.round(Math.min(c.ps,1.2)/1.2*20),20),s_hist=Math.min(Math.round(sc*.1),10);
+  var priceGood=c.ps>=1.08;
+  var tc=c.rel>=90?'var(--green)':c.rel>=75?'var(--blue)':'var(--amber)';
+  var isImport=c.country&&c.country!=='FR';
+  var countryNames={DE:'Allemagne',PL:'Pologne',BE:'Belgique',ES:'Espagne',IT:'Italie',CZ:'Tchéquie',GB:'Royaume-Uni'};
+  var tcoFuel=c.consumption?Math.round(c.consumption*30000/100*1.65):2200;
+  var tcoImport=isImport?750:0;
+  var tcoTotal=c.price+1800+900+tcoFuel+tcoImport;
+  var daysOnline='';
+  if(c.first_seen_at){var d=Math.round((Date.now()-new Date(c.first_seen_at).getTime())/864e5);daysOnline=d===0?"Aujourd'hui":d===1?'Hier':d+' jours';}
+
+  var badges=[
+    c.has_ct?'<div class="ibadge ib-green"><i class="ti ti-circle-check"></i>CT valide</div>':'',
+    c.is_first_owner?'<div class="ibadge ib-blue"><i class="ti ti-user"></i>1er propriétaire</div>':'',
+    c.has_service_book?'<div class="ibadge ib-blue"><i class="ti ti-notebook"></i>Carnet complet</div>':'',
+    c.is_accident_free?'<div class="ibadge ib-green"><i class="ti ti-shield"></i>Non accidenté</div>':'',
+    c.carvertical?'<div class="ibadge ib-amber"><i class="ti ti-award"></i>CarVertical ✓</div>':'',
+    isImport?'<div class="ibadge ib-amber"><i class="ti ti-map-pin"></i>Import '+c.flag+'</div>':'',
+    daysOnline?'<div class="ibadge ib-blue"><i class="ti ti-clock"></i>En ligne : '+daysOnline+'</div>':'',
+  ].filter(Boolean).join('');
+
+  var specRows=[['Marque',c.make],['Modèle',c.model],['Version',c.version],['Année',c.year],['Kilométrage',c.km.toLocaleString('fr-FR')+' km'],['Énergie',c.fuel.charAt(0).toUpperCase()+c.fuel.slice(1)],c.gearbox?['Boîte',c.gearbox.charAt(0).toUpperCase()+c.gearbox.slice(1)]:null,c.power?['Puissance',c.power+' ch']:null,c.body?['Carrosserie',c.body]:null,c.color?['Couleur',c.color.charAt(0).toUpperCase()+c.color.slice(1)]:null,c.doors?['Portes',c.doors]:null,c.consumption?['Consommation',c.consumption+' L/100km']:null,['Localisation',c.city+' '+c.flag],['Source',c.src]].filter(Boolean);
+
+  // Thumbnail HTML
+  var thumbsHtml=PHOTOS.map(function(p,i){return '<div class="gal-thumb'+(i===0?' on':'')+'" data-idx="'+i+'"><img src="'+p+'" loading="lazy"></div>';}).join('');
+  var dotsHtml=PHOTOS.map(function(p,i){return '<div class="gdot'+(i===0?' on':'')+'" data-idx="'+i+'"></div>';}).join('');
+
+  document.getElementById('app').innerHTML=
+    // NAV
+    '<nav class="topnav">'
+      +'<a class="tn-back" href="index.html" style="display:flex;align-items:center;gap:7px;font-size:13px;font-weight:500;color:var(--gray);cursor:pointer;padding:6px 10px;border-radius:var(--r);text-decoration:none;transition:all .15s"><i class="ti ti-arrow-left"></i>Retour</a>'
+      +'<div class="tn-breadcrumb"><span onclick="window.location.href=\'index.html\'">Accueil</span><span class="sep">/</span><span onclick="window.location.href=\'index.html\'">Occasion</span><span class="sep">/</span><span>'+c.make+'</span><span class="sep">/</span><span style="color:var(--ink);font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+c.model+' '+c.version.split('·')[0].trim()+'</span></div>'
+      +'<div class="tn-actions"><button class="tn-btn" onclick="shareAnnonce()" title="Partager"><i class="ti ti-share"></i></button><button class="tn-btn" id="topFavBtn" onclick="toggleFav()" title="Favoris"><i class="ti ti-heart"></i></button></div>'
+    +'</nav>'
+
+    // LAYOUT
+    +'<div class="page-layout">'
+
+      // LEFT
+      +'<div class="left-col">'
+
+        // GALLERY
+        +'<div class="gallery-card">'
+          +'<div class="gal-main" id="gal-main">'
+            +'<img id="gal-img" src="'+PHOTOS[0]+'" alt="'+c.make+' '+c.model+'">'
+            +'<div class="gal-src">'+c.flag+' '+c.src+'</div>'
+            +'<div class="gal-score"><i class="ti ti-cpu" style="font-size:10px"></i>Score '+c.score+'/100</div>'
+            +(PHOTOS.length>1?'<div class="gal-counter"><i class="ti ti-photo" style="font-size:11px"></i><span id="gal-num">1</span>/'+PHOTOS.length+'</div>':'')
+            +'<div class="gal-dots" id="gal-dots">'+dotsHtml+'</div>'
+            +(PHOTOS.length>1?'<button class="gal-nav gal-prev" onclick="galGo(-1)"><i class="ti ti-chevron-left"></i></button><button class="gal-nav gal-next" onclick="galGo(1)"><i class="ti ti-chevron-right"></i></button>':'')
+          +'</div>'
+          +'<div class="gal-thumbs" id="gal-thumbs">'+thumbsHtml+'</div>'
+        +'</div>'
+
+        // INFO CARD
+        +'<div class="info-card">'
+          +'<div class="ic-header"><div class="ic-make">'+c.make+'</div><div class="ic-title">'+c.model+'</div><div class="ic-version">'+c.version+' · '+c.year+' · '+Math.round(c.km/1000)+'k km</div></div>'
+
+          // Score
+          +'<div class="ic-score-row">'
+            +'<div style="flex-shrink:0;text-align:center"><div class="ic-score-num">'+c.score+'</div><div class="ic-score-lbl">Score Torque</div></div>'
+            +'<div style="width:1px;height:52px;background:rgba(229,37,53,.15);flex-shrink:0"></div>'
+            +'<div class="ic-score-bars">'
+              +'<div class="ic-bar-row"><span class="ic-bar-lbl"><i class="ti ti-target"></i>Critères</span><div class="ic-bar"><div class="ic-bar-fill" style="width:'+Math.round(s_crit/40*100)+'%;background:var(--green)"></div></div><span class="ic-bar-val" style="color:var(--green)">'+s_crit+'/40</span></div>'
+              +'<div class="ic-bar-row"><span class="ic-bar-lbl"><i class="ti ti-shield-check"></i>Fiabilité</span><div class="ic-bar"><div class="ic-bar-fill" style="width:'+c.rel+'%;background:var(--blue)"></div></div><span class="ic-bar-val" style="color:var(--blue)">'+s_fiab+'/30</span></div>'
+              +'<div class="ic-bar-row"><span class="ic-bar-lbl"><i class="ti ti-chart-line"></i>Prix/marché</span><div class="ic-bar"><div class="ic-bar-fill" style="width:'+Math.round(s_prix/20*100)+'%;background:var(--amber)"></div></div><span class="ic-bar-val" style="color:var(--amber)">'+s_prix+'/20</span></div>'
+              +'<div class="ic-bar-row"><span class="ic-bar-lbl"><i class="ti ti-history"></i>Historique</span><div class="ic-bar"><div class="ic-bar-fill" style="width:'+Math.round(s_hist/10*100)+'%;background:#7c3aed"></div></div><span class="ic-bar-val" style="color:#7c3aed">'+s_hist+'/10</span></div>'
+              +(c.reason?'<div class="ic-reason">'+c.reason+'</div>':'')
+            +'</div>'
+          +'</div>'
+
+          // Specs grid
+          +'<div class="ic-specs">'
+            +'<div class="ic-spec"><i class="ti ti-calendar ic-spec-icon"></i><div class="ic-spec-val">'+c.year+'</div><div class="ic-spec-lbl">Année</div></div>'
+            +'<div class="ic-spec"><i class="ti ti-road ic-spec-icon"></i><div class="ic-spec-val">'+Math.round(c.km/1000)+'k km</div><div class="ic-spec-lbl">Kilométrage</div></div>'
+            +(c.power?'<div class="ic-spec"><i class="ti ti-engine ic-spec-icon"></i><div class="ic-spec-val">'+c.power+' ch</div><div class="ic-spec-lbl">Puissance</div></div>':'')
+            +'<div class="ic-spec"><i class="ti ti-gas-station ic-spec-icon"></i><div class="ic-spec-val">'+c.fuel.charAt(0).toUpperCase()+c.fuel.slice(1)+'</div><div class="ic-spec-lbl">Énergie</div></div>'
+          +'</div>'
+
+          +(badges?'<div class="ic-badges">'+badges+'</div>':'')
+          +(c.description?'<div class="ic-desc"><div class="ic-desc-title">Description du vendeur</div>'+c.description+'</div>':'')
+
+          // Specs table
+          +'<div class="ic-table"><div class="ic-table-title">Caractéristiques techniques</div><table class="spec-table">'+specRows.map(function(r){return'<tr><td>'+r[0]+'</td><td>'+r[1]+'</td></tr>';}).join('')+'</table></div>'
+
+          // TCO
+          +'<div class="ic-tco"><div class="ic-tco-title"><i class="ti ti-calculator"></i>Coût total estimé sur 3 ans</div><table class="tco-table"><tr><td>Prix d&#39;achat</td><td>'+c.price.toLocaleString('fr-FR')+' €</td></tr><tr><td>Assurance estimée (3 ans)</td><td>~1 800 €</td></tr><tr><td>Entretien estimé</td><td>~900 €</td></tr><tr><td>Carburant (30 000 km)</td><td>~'+tcoFuel.toLocaleString('fr-FR')+' €</td></tr>'+(isImport?'<tr><td>Frais import estimés</td><td>~750 €</td></tr>':'')+'<tr><td>Total propriété 3 ans</td><td>~'+tcoTotal.toLocaleString('fr-FR')+' €</td></tr></table></div>'
+        +'</div>'
+
+        // Similar
+        +'<div id="similar-section"></div>'
+      +'</div>'
+
+      // RIGHT
+      +'<div class="right-col">'
+
+        // Price card
+        +'<div class="price-card">'
+          +'<div class="pc-top"><div class="pc-label">Prix de vente</div><div class="pc-price">'+c.price.toLocaleString('fr-FR')+' €</div><div class="pc-price-sub">TTC · hors frais'+(priceGood?'<span class="pc-good"><i class="ti ti-trending-down"></i>'+Math.round((c.ps-1)*100)+'% sous le marché</span>':'')+'</div></div>'
+          +'<div class="pc-btns">'
+            +'<button class="pc-btn-main" id="btn-source"><i class="ti ti-external-link"></i>Voir l&#39;annonce sur '+c.src+'</button>'
+            +'<button class="pc-btn-sec" data-toast="📞 Contact disponible sur le site source" onclick="showToast(this.dataset.toast)"><i class="ti ti-phone"></i>Contacter le vendeur</button>'
+            +'<button class="pc-btn-fav" id="fav-btn" onclick="toggleFav()"><i class="ti ti-heart"></i>Ajouter aux favoris</button>'
+            +'<button class="pc-btn-torque" id="btn-torque-scroll"><span class="t-badge">T</span>Demander à Torque IA</button>'
+          +'</div>'
+          +'<div class="pc-source"><i class="ti ti-info-circle" style="font-size:15px"></i><span>Source : <strong>'+c.src+'</strong> · '+c.city+' '+c.flag+'</span></div>'
+        +'</div>'
+
+        // Reliability
+        +'<div class="rel-card"><div class="rel-card-title"><i class="ti ti-shield-check" style="color:var(--green)"></i>Fiabilité TÜV</div>'
+          +'<div class="rel-main"><div style="flex-shrink:0;text-align:center"><div class="rel-num" style="color:'+tc+'">'+c.rel+'</div><div class="rel-label" style="color:'+tc+'">/100</div></div>'
+            +'<div class="rel-bar-wrap"><div style="font-size:12px;font-weight:600;color:'+tc+';margin-bottom:4px">Score composite TÜV</div><div class="rel-bar-bg"><div class="rel-bar-fill" style="width:'+c.rel+'%;background:'+tc+'"></div></div><div style="font-size:11px;color:var(--gray)">TÜV Report 2024</div></div>'
+          +'</div>'
+          +'<div class="rel-rows"><div class="rel-row"><span>Score TÜV</span><span>'+c.rel+'/100</span></div><div class="rel-row"><span>Énergie</span><span>'+c.fuel.charAt(0).toUpperCase()+c.fuel.slice(1)+'</span></div>'+(c.consumption?'<div class="rel-row"><span>Consommation</span><span>'+c.consumption+' L/100km</span></div>':'')+'</div>'
+        +'</div>'
+
+        // Import
+        +(isImport?'<div class="import-card"><div class="import-card-title"><i class="ti ti-truck"></i>Informations import</div><div class="import-rows"><div class="import-row"><i class="ti ti-map-pin"></i><div class="import-row-text"><strong>'+(countryNames[c.country]||c.country)+' → France</strong><br><span>'+c.flag+' '+c.src+'</span></div></div><div class="import-row"><i class="ti ti-truck"></i><div class="import-row-text"><strong>Transport estimé</strong><br><span>400–600 € selon transporteur</span></div></div><div class="import-row"><i class="ti ti-file-invoice"></i><div class="import-row-text"><strong>Homologation France</strong><br><span>~350 € · 2–3 semaines</span></div></div></div><div class="import-total"><span>Total frais estimés</span><span style="color:var(--amber)">~750 €</span></div></div>':'')
+
+        // Seller
+        +'<div class="seller-card"><div class="seller-card-title"><i class="ti ti-building-store"></i>Vendeur</div>'
+          +'<div class="seller-info"><div class="seller-ava">'+(c.seller_name||c.src).charAt(0).toUpperCase()+'</div>'
+            +'<div style="flex:1;min-width:0"><div class="seller-name">'+(c.seller_name||'Vendeur '+c.src)+'</div><div class="seller-type">'+(c.seller_type==='pro'?'Professionnel':c.seller_type==='private'?'Particulier':'Vendeur')+' · '+c.city+' '+c.flag+'</div>'+(c.seller_rating?'<div class="seller-rating"><i class="ti ti-star-filled" style="font-size:11px"></i>'+c.seller_rating+'</div>':'')+'</div>'
+            +'<div style="background:var(--green-lt);color:var(--green);font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;flex-shrink:0">Vérifié</div>'
+          +'</div>'
+          +'<div class="seller-stats"><div class="ss-item"><div class="ss-num">'+c.src+'</div><div class="ss-lbl">Source</div></div><div class="ss-item"><div class="ss-num">&lt;24h</div><div class="ss-lbl">Réponse</div></div></div>'
+        +'</div>'
+
+        // Torque
+        +'<div class="torque-card" id="torque-card">'
+          +'<div class="tc-header"><div class="tc-ava">T</div><div><div class="tc-name">Torque <span style="font-size:9px;background:rgba(229,37,53,.25);color:#ff6b77;padding:1px 7px;border-radius:10px;font-weight:700;letter-spacing:.3px">IA</span></div><div class="tc-stat"><div class="tc-dot"></div>Analyse cette annonce</div></div></div>'
+          +'<div class="tc-msgs" id="tc-msgs"><div class="tcm bot"><div class="tc-av">T</div><div class="tcm-bbl">J&#39;ai analysé ce <strong>'+c.make+' '+c.model+'</strong> — Score <strong>'+c.score+'/100</strong>. '+(c.reason||'Que voulez-vous savoir ?')+'</div></div></div>'
+          +'<div class="tc-qr"><button class="tc-qr-btn" onclick="tSend(this.textContent.slice(2))">🔍 Inspection avant achat</button><button class="tc-qr-btn" onclick="tSend(this.textContent.slice(2))">🚛 Frais import</button><button class="tc-qr-btn" onclick="tSend(this.textContent.slice(2))">💬 Négocier le prix</button><button class="tc-qr-btn" onclick="tSend(this.textContent.slice(2))">⚠️ Points vigilance</button><button class="tc-qr-btn" onclick="tSend(this.textContent.slice(2))">💶 TCO 3 ans</button></div>'
+          +'<div class="tc-input-row"><input class="tc-input" id="tc-in" placeholder="Question sur cette annonce…"><button class="tc-send" id="tc-send"><i class="ti ti-send"></i></button></div>'
+        +'</div>'
+
+      +'</div>'
+    +'</div>';
+
+  // Wire source button
+  var srcBtn=document.getElementById('btn-source');
+  if(srcBtn)srcBtn.onclick=function(){if(c.source_url)window.open(c.source_url,'_blank');else showToast('Lien non disponible');};
+  // Wire torque scroll button
+  var torqueScrollBtn=document.getElementById('btn-torque-scroll');
+  if(torqueScrollBtn)torqueScrollBtn.onclick=function(){var tc=document.getElementById('torque-card');if(tc)tc.scrollIntoView({behavior:'smooth'});};
+
+  // Gallery events
+  document.getElementById('gal-thumbs').addEventListener('click',function(e){var t=e.target.closest('.gal-thumb');if(t)galGoTo(parseInt(t.dataset.idx));});
+  document.getElementById('gal-dots').addEventListener('click',function(e){var d=e.target.closest('.gdot');if(d)galGoTo(parseInt(d.dataset.idx));});
+  var gm=document.getElementById('gal-main'),sx=0;
+  gm.ontouchstart=function(e){sx=e.touches[0].clientX;};
+  gm.ontouchend=function(e){var dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40)galGo(dx<0?1:-1);};
+
+  // Torque input
+  var inp=document.getElementById('tc-in'),snd=document.getElementById('tc-send');
+  inp.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();var v=inp.value.trim();inp.value='';tSend(v);}});
+  snd.onclick=function(){var v=inp.value.trim();inp.value='';tSend(v);};
+
+  // Store context for Torque
+  window._tcSys='Tu es Torque, conseiller IA AutoEurope. Annonce : '+c.make+' '+c.model+' '+c.year+', '+c.km.toLocaleString('fr-FR')+' km, '+c.price.toLocaleString('fr-FR')+' €, Score '+c.score+'/100, TÜV '+c.rel+'/100, '+c.fuel+(c.gearbox?', '+c.gearbox:'')+', '+c.src+' '+c.flag+'. Réponds en français, 3-4 phrases max, précis et expert.';
+
+  loadSimilar(c);
+  checkFav();
+}
+
+function galGoTo(n){
+  galCur=Math.max(0,Math.min(PHOTOS.length-1,n));
+  var img=document.getElementById('gal-img');
+  img.style.opacity='0';
+  setTimeout(function(){img.src=PHOTOS[galCur];img.style.transition='opacity .2s';img.style.opacity='1';},120);
+  var numEl=document.getElementById('gal-num');if(numEl)numEl.textContent=galCur+1;
+  document.querySelectorAll('.gdot').forEach(function(d,i){d.classList.toggle('on',i===galCur);});
+  document.querySelectorAll('.gal-thumb').forEach(function(t,i){t.classList.toggle('on',i===galCur);});
+  var active=document.querySelectorAll('.gal-thumb')[galCur];
+  if(active)active.scrollIntoView({behavior:'smooth',inline:'center',block:'nearest'});
+}
+function galGo(dir){galGoTo(galCur+dir);}
+document.addEventListener('keydown',function(e){if(e.key==='ArrowLeft')galGo(-1);if(e.key==='ArrowRight')galGo(1);});
+
+async function loadSimilar(c){
+  try{
+    var res=await fetch(API+'/api/search?make='+encodeURIComponent(c.make)+'&limit=5');
+    var data=await res.json();
+    var similar=(data.annonces||[]).filter(function(a){return String(a.id)!==String(c.id);}).slice(0,4);
+    if(!similar.length)return;
+    var flags={FR:'🇫🇷',DE:'🇩🇪',PL:'🇵🇱',BE:'🇧🇪',ES:'🇪🇸',IT:'🇮🇹',CZ:'🇨🇿',GB:'🇬🇧'};
+    var html='<div class="section-title"><i class="ti ti-cars"></i>Annonces similaires</div><div class="similar-row">';
+    similar.forEach(function(s){
+      var si=(s.photos&&s.photos[0])||getCarImage(s.make,s.model);
+      html+='<div class="sim-card" id="sc'+s.id+'">';
+        +'<div class="sim-img"><img src="'+si+'" loading="lazy"><div class="sim-score">'+((s.torque_score||s.score||75))+'</div></div>'
+        +'<div class="sim-body"><div class="sim-make">'+s.make+'</div><div class="sim-model">'+s.model+'</div><div class="sim-sub">'+s.year+' · '+Math.round((s.km||0)/1000)+'k km</div><div class="sim-price">'+((s.price||0).toLocaleString('fr-FR'))+' €</div></div></div>';
+    });
+    html+='</div>';
+    document.getElementById('similar-section').innerHTML=html;
+    // Wire sim cards
+    similar.forEach(function(s){
+      var el=document.getElementById('sc'+s.id);
+      if(el)el.onclick=function(){window.location.href='annonce.html?id='+s.id;};
+    });
+  }catch(e){}
+}
+
+function checkFav(){
+  try{var favs=JSON.parse(localStorage.getItem('ae_favs')||'[]');isFaved=favs.indexOf(String(annonceId))>-1;updateFavUI();}catch(e){}
+}
+function updateFavUI(){
+  var btn=document.getElementById('fav-btn'),navBtn=document.getElementById('topFavBtn');
+  if(btn){btn.className='pc-btn-fav'+(isFaved?' on':'');btn.innerHTML=isFaved?'<i class="ti ti-heart-filled"></i>Dans vos favoris':'<i class="ti ti-heart"></i>Ajouter aux favoris';}
+  if(navBtn){navBtn.className='tn-btn'+(isFaved?' faved':'');navBtn.innerHTML=isFaved?'<i class="ti ti-heart-filled"></i>':'<i class="ti ti-heart"></i>';}
+}
+async function toggleFav(){
+  if(!authUser){showToast('🔑 Connectez-vous pour ajouter aux favoris');window.location.href='index.html';return;}
+  if(isFaved){showToast('💔 Déjà dans vos favoris');return;}
+  try{
+    var res=await fetch(API+'/api/favoris',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},body:JSON.stringify({annonce_id:annonceId})});
+    if(!res.ok)throw new Error();
+    isFaved=true;
+    try{var favs=JSON.parse(localStorage.getItem('ae_favs')||'[]');favs.push(String(annonceId));localStorage.setItem('ae_favs',JSON.stringify(favs));}catch(e){}
+    updateFavUI();showToast('❤️ Ajouté aux favoris !');
+  }catch(e){showToast('❌ Erreur lors de l&#39;ajout');}
+}
+
+function shareAnnonce(){
+  if(navigator.share)navigator.share({title:'AutoEurope — '+document.title,url:window.location.href}).catch(function(){});
+  else navigator.clipboard.writeText(window.location.href).then(function(){showToast('🔗 Lien copié !');}).catch(function(){showToast('🔗 Lien copié !');});
+}
+
+var tcBusy=false,tcHist=[];
+function tSend(txt){
+  if(tcBusy||!txt||!txt.trim())return;tcBusy=true;
+  var msgs=document.getElementById('tc-msgs');
+  var ud=document.createElement('div');ud.className='tcm u';ud.innerHTML='<div class="tcm-bbl">'+txt+'</div>';msgs.appendChild(ud);
+  var typ=document.createElement('div');typ.className='tcm bot';typ.id='tc-typ';
+  typ.innerHTML='<div class="tc-av">T</div><div class="tcm-bbl"><div class="tdots"><div class="td"></div><div class="td"></div><div class="td"></div></div></div>';
+  msgs.appendChild(typ);msgs.scrollTop=msgs.scrollHeight;
+  tcHist.push({role:'user',content:txt});
+  fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:400,system:window._tcSys||'Tu es Torque IA AutoEurope. Réponds en français.',messages:tcHist})})
+  .then(function(r){return r.json();}).then(function(d){
+    var t=document.getElementById('tc-typ');if(t)t.remove();
+    var text=(d.content&&d.content.map(function(b){return b.text||'';}).join(''))||'Erreur, réessayez.';
+    var bd=document.createElement('div');bd.className='tcm bot';bd.innerHTML='<div class="tc-av">T</div><div class="tcm-bbl">'+text.replace(/\n/g,'<br>')+'</div></div>';
+    msgs.appendChild(bd);msgs.scrollTop=msgs.scrollHeight;tcHist.push({role:'assistant',content:text});tcBusy=false;
+  }).catch(function(){
+    var t=document.getElementById('tc-typ');if(t)t.remove();
+    var bd=document.createElement('div');bd.className='tcm bot';bd.innerHTML='<div class="tc-av">T</div><div class="tcm-bbl">Erreur de connexion.</div>';
+    msgs.appendChild(bd);msgs.scrollTop=msgs.scrollHeight;tcBusy=false;
+  });
+}
+
+function showError(title,msg){document.getElementById('app').innerHTML='<div class="page-error"><i class="ti ti-alert-circle"></i><h2>'+title+'</h2><p>'+msg+'</p><a href="index.html"><i class="ti ti-arrow-left"></i>Retour à l&#39;accueil</a></div>';}
+var toastT;
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.style.display='block';clearTimeout(toastT);toastT=setTimeout(function(){t.style.display='none';},2500);}
+
+loadAnnonce();
+</script>
+
+<!-- ══ MOBILE BOTTOM NAV ══ -->
+<nav class="mobile-bottom-nav">
+  <div class="mbn-item" onclick="window.location.href='index.html'">
+    <i class="ti ti-home"></i><span>Accueil</span>
+  </div>
+  <div class="mbn-item" onclick="window.location.href='index.html'">
+    <i class="ti ti-search"></i><span>Recherche</span>
+  </div>
+  <div class="mbn-item " onclick="window.location.href='favoris.html'">
+    <i class="ti ti-heart"></i><span>Favoris</span>
+  </div>
+  <div class="mbn-item " onclick="window.location.href='alertes.html'">
+    <i class="ti ti-bell"></i><span>Alertes</span>
+  </div>
+  <div class="mbn-item " onclick="window.location.href='deposer.html'">
+    <i class="ti ti-plus-circle"></i><span>Déposer</span>
+  </div>
+</nav>
+</body>
+</html>

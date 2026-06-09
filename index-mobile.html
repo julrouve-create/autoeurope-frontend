@@ -1,0 +1,1607 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="color-scheme" content="light">
+<meta name="theme-color" content="#0f1117">
+<meta name="color-scheme" content="light">
+<link rel="manifest" href="data:application/json,{%22name%22:%22AutoEurope%22,%22short_name%22:%22AutoEurope%22,%22start_url%22:%22/index-mobile.html%22,%22display%22:%22standalone%22,%22background_color%22:%22%230f1117%22,%22theme_color%22:%22%23e52535%22,%22icons%22:[{%22src%22:%22https://via.placeholder.com/192x192/e52535/ffffff?text=A%22,%22sizes%22:%22192x192%22,%22type%22:%22image/png%22}]}">
+<meta name="theme-color" content="#e52535">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="AutoEurope">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>AutoEurope</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;-webkit-text-fill-color:inherit}
+:root{
+  color-scheme: light only;
+  --ink:#0f1117;--red:#e52535;--red-lt:rgba(229,37,53,.08);
+  --blue:#1d4ed8;--blue-lt:#eff6ff;
+  --green:#16a34a;--green-lt:#f0fdf4;
+  --amber:#d97706;--amber-lt:#fffbeb;
+  --gray:#64748b;--gray2:#94a3b8;--gray-lt:#f8fafc;
+  --border:#e8ecf0;--page:#f1f5f9;
+  --r:10px;--rl:14px;
+  --sb:env(safe-area-inset-bottom,0px);
+  --st:env(safe-area-inset-top,0px);
+}
+html,body{height:100%;overflow:hidden;color-scheme:light}
+body{font-family:'DM Sans',sans-serif;background:#f1f5f9;color:#0f1117;-webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
+button,input,select{font-family:inherit;outline:none;border:none;cursor:pointer}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ══ SCREENS ══ */
+.screen{display:none;flex-direction:column;flex:1;overflow:hidden}
+.screen.active{display:flex}
+
+/* ══ HEADER ══ */
+.app-header{
+  background:#0f1117;padding:calc(10px + env(safe-area-inset-top,0px)) 16px 10px;
+  display:flex;align-items:center;gap:10px;flex-shrink:0
+}
+.logo{font-family:'Syne',sans-serif;font-size:19px;font-weight:800;color:#fff;letter-spacing:-.4px;flex:1}
+.logo span{color:#e52535}
+.hdr-btn{
+  width:38px;height:38px;border-radius:50%;
+  background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);
+  color:rgba(255,255,255,.7);font-size:19px;
+  display:flex;align-items:center;justify-content:center;
+  position:relative;flex-shrink:0;transition:all .15s
+}
+.hdr-btn.on{background:rgba(229,37,53,.2);border-color:rgba(229,37,53,.4);color:#e52535}
+
+/* ══ SEARCH BAR ══ */
+.search-bar{background:#fff;border-bottom:1px solid #e8ecf0;padding:10px 12px;display:flex;align-items:center;gap:8px;flex-shrink:0}
+.search-pill{
+  flex:1;display:flex;align-items:center;gap:8px;
+  background:#f8fafc;border:1.5px solid #e8ecf0;
+  border-radius:14px;padding:10px 13px;transition:all .15s
+}
+.search-pill-text{font-size:14px;font-weight:300;color:#94a3b8;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.search-pill-text.active{color:#0f1117;font-weight:500}
+.filter-icon{
+  width:42px;height:42px;border-radius:10px;
+  background:#0f1117;color:#fff;font-size:18px;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;position:relative
+}
+.f-dot{position:absolute;top:-3px;right:-3px;width:9px;height:9px;border-radius:50%;background:#e52535;border:2px solid #fff;display:none}
+
+/* ══ CHIPS ══ */
+.chips-row{
+  background:#fff;border-bottom:1px solid #e8ecf0;
+  padding:8px 12px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex-shrink:0
+}
+.chips-row::-webkit-scrollbar{display:none}
+.chip{
+  flex-shrink:0;display:flex;align-items:center;gap:4px;
+  padding:6px 12px;border-radius:20px;border:1.5px solid #e8ecf0;
+  background:#fff;font-size:13px;font-weight:400;color:#64748b;
+  white-space:nowrap;transition:all .15s
+}
+.chip i{font-size:13px}
+.chip.on{background:#0f1117;color:#fff;border-color:#0f1117;font-weight:500}
+
+/* ══ RESULTS BAR ══ */
+.results-bar{
+  background:#f1f5f9;padding:9px 13px;
+  display:flex;align-items:center;justify-content:space-between;flex-shrink:0
+}
+.rb-count{font-size:13px;font-weight:300;color:#64748b}
+.rb-count b{font-weight:700;color:#0f1117}
+.rb-sort{
+  border:1.5px solid #e8ecf0;border-radius:10px;
+  padding:6px 26px 6px 10px;font-size:12px;color:#64748b;
+  background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.5'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E") no-repeat right 8px center;
+  appearance:none
+}
+
+/* ══ CARS SCROLL ══ */
+.cars-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:8px 12px calc(8px + 72px + env(safe-area-inset-bottom,0px))}
+.cars-list::-webkit-scrollbar{display:none}
+
+/* ══ CAR CARD ══ */
+.car-card{
+  background:#fff;border-radius:14px;border:1px solid #e8ecf0;
+  overflow:hidden;margin-bottom:10px;cursor:pointer;
+  transition:transform .12s;animation:fadeUp .3s ease both
+}
+.car-card:active{transform:scale(.985)}
+.car-card.top{border-color:rgba(22,163,74,.35);border-width:1.5px}
+.cc-img{height:170px;position:relative;overflow:hidden;background:#e2e8f0}
+.cc-img img{width:100%;height:100%;object-fit:cover;display:block}
+.cc-src{position:absolute;bottom:7px;left:8px;background:rgba(15,17,23,.7);backdrop-filter:blur(4px);color:#fff;font-size:9px;font-weight:600;padding:3px 8px;border-radius:5px}
+.cc-score{position:absolute;top:8px;right:8px;background:#0f1117;color:#fff;font-size:10px;font-weight:700;padding:3px 9px;border-radius:20px;display:flex;align-items:center;gap:3px}
+.cc-score.hi{background:#16a34a}
+.cc-fav{position:absolute;top:8px;left:8px;width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,.88);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;font-size:15px;color:#94a3b8;transition:all .15s}
+.cc-fav.on{color:#e52535}
+.cc-body{padding:11px 13px}
+.cc-make{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.1px;color:#94a3b8}
+.cc-model{font-size:17px;font-weight:700;color:#0f1117;letter-spacing:-.2px;margin:1px 0}
+.cc-sub{font-size:11px;color:#94a3b8;font-weight:300}
+.cc-price-row{display:flex;align-items:center;justify-content:space-between;margin:8px 0 7px}
+.cc-price{font-size:20px;font-weight:700;color:#0f1117;letter-spacing:-.5px;font-family:-apple-system,system-ui,sans-serif}
+.price-pill{font-size:10px;font-weight:600;padding:3px 8px;border-radius:20px;display:flex;align-items:center;gap:3px}
+.price-pill.good{background:#f0fdf4;color:#16a34a}
+.price-pill.fair{background:#fffbeb;color:#d97706}
+.cc-specs{display:flex;gap:10px;font-size:12px;color:#64748b;font-weight:300;margin-bottom:9px;flex-wrap:wrap}
+.cc-spec{display:flex;align-items:center;gap:3px}
+.cc-spec i{font-size:13px}
+.cc-badges{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:9px}
+.badge{font-size:10px;font-weight:500;padding:2px 7px;border-radius:5px;display:inline-flex;align-items:center;gap:3px}
+.badge i{font-size:10px}
+.bt-g{background:#f0fdf4;color:#16a34a}
+.bt-b{background:#eff6ff;color:#1d4ed8}
+.bt-a{background:#fffbeb;color:#d97706}
+.cc-actions{display:flex;gap:7px}
+.cc-btn-view{flex:1;background:#eff6ff;color:#1d4ed8;border-radius:10px;padding:9px;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:5px}
+.cc-btn-view i{font-size:13px}
+.cc-btn-al{background:#f8fafc;color:#64748b;border-radius:10px;padding:9px 12px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:4px}
+.cc-btn-al i{font-size:13px}
+.cc-torque{background:linear-gradient(135deg,#fdf2f4,#fce7eb);border-top:1px solid rgba(229,37,53,.08);padding:7px 13px;display:flex;align-items:center;gap:7px;font-size:11px;color:#991b1b;font-style:italic;font-weight:300}
+.cc-tav{width:18px;height:18px;border-radius:50%;background:#e52535;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:9px;font-weight:800;color:#fff;flex-shrink:0}
+
+/* ══ STATES ══ */
+.state-loading{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:#64748b}
+.state-empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:40px 20px;text-align:center;color:#64748b}
+.state-empty i{font-size:48px;color:#e8ecf0}
+.state-empty h3{font-size:16px;font-weight:600;color:#0f1117}
+.state-empty p{font-size:13px;font-weight:300;line-height:1.6}
+.spin{animation:spin 1s linear infinite;display:inline-block;font-size:34px;color:#e52535}
+.retry{margin-top:8px;background:#e52535;color:#fff;border-radius:10px;padding:10px 20px;font-size:14px;font-weight:600}
+
+/* ══ BOTTOM NAV ══ */
+.bottom-nav{
+  position:fixed;bottom:0;left:0;right:0;
+  background:#fff;border-top:1px solid #e8ecf0;
+  padding:6px 0 calc(6px + env(safe-area-inset-bottom,0px));
+  z-index:100;display:flex;justify-content:space-around;align-items:flex-end;
+  box-shadow:0 -2px 16px rgba(0,0,0,.06)
+}
+.bn-item{
+  display:flex;flex-direction:column;align-items:center;gap:3px;
+  color:#94a3b8;font-size:10px;font-weight:500;
+  padding:2px 10px;flex:1;transition:color .15s;position:relative
+}
+.bn-item.on{color:#e52535}
+.bn-item i{font-size:22px;transition:transform .15s}
+.bn-item.on i{transform:scale(1.1)}
+.bn-badge{position:absolute;top:0;right:10px;min-width:15px;height:15px;border-radius:8px;background:#e52535;color:#fff;font-size:9px;font-weight:700;display:none;align-items:center;justify-content:center;padding:0 3px;border:2px solid #fff}
+/* Déposer button */
+.bn-plus{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;padding:2px 0}
+.bn-plus-icon{width:44px;height:44px;border-radius:14px;background:#e52535;color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(229,37,53,.35);margin-top:-16px;transition:transform .12s}
+.bn-plus-icon:active{transform:scale(.92)}
+.bn-plus span{font-size:10px;font-weight:600;color:#e52535}
+
+/* ══ OVERLAY + SHEET ══ */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:none;backdrop-filter:blur(2px)}
+.overlay.on{display:block;animation:fadeIn .2s ease}
+.sheet{position:fixed;bottom:0;left:0;right:0;background:#ffffff !important;color-scheme:light !important;border-radius:20px 20px 0 0;z-index:201;display:none;flex-direction:column;max-height:94vh;box-shadow:0 -8px 40px rgba(0,0,0,.15);padding-bottom:env(safe-area-inset-bottom,0px);color:#0f1117}
+.sheet.on{display:flex;animation:slideUp .28s cubic-bezier(.25,.46,.45,.94)}
+.sh-handle{width:36px;height:4px;background:#e8ecf0;border-radius:2px;margin:10px auto 0;flex-shrink:0}
+.sh-hdr{padding:14px 16px;border-bottom:1px solid #e8ecf0;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.sh-title{font-size:16px;font-weight:700;color:#0f1117;display:flex;align-items:center;gap:8px}
+.sh-title i{color:#e52535}
+.sh-close{font-size:22px;color:#94a3b8;width:32px;height:32px;display:flex;align-items:center;justify-content:center}
+.sh-body{flex:1;overflow-y:auto;padding:16px;scrollbar-width:none;background:#fff !important;color:#0f1117 !important;color-scheme:light}
+.sh-body::-webkit-scrollbar{display:none}
+.sh-footer{padding:12px 16px;border-top:1px solid #e8ecf0;flex-shrink:0;display:flex;gap:8px}
+
+/* ══ FORM ══ */
+.fl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:#94a3b8;margin-bottom:5px;display:block}
+.fi{width:100%;border:1.5px solid #e8ecf0;border-radius:10px;padding:11px 13px;font-size:14px;font-weight:300;color:#0f1117 !important;background:#f8fafc !important;margin-bottom:14px;transition:border-color .15s}
+.fi:focus{border-color:#e52535;background:#fff}
+.fchips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px}
+.fc{padding:7px 13px;border:1.5px solid #e8ecf0;border-radius:20px;font-size:13px;color:#64748b !important;background:#f8fafc !important;transition:all .15s;white-space:nowrap}
+.fc.on{border-color:#e52535;background:rgba(229,37,53,.08);color:#e52535;font-weight:500}
+.ftog{display:flex;align-items:center;justify-content:space-between;padding:11px 0;border-bottom:1px solid #e8ecf0;font-size:13px;font-weight:300;color:#0f1117}
+.ftog:last-child{border-bottom:none}
+.fsw{width:44px;height:26px;border-radius:13px;border:none;position:relative;flex-shrink:0;transition:background .2s}
+.fsw.on{background:#16a34a}.fsw.off{background:#e2e8f0}
+.fsw::after{content:'';position:absolute;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:left .2s}
+.fsw.on::after{left:21px}.fsw.off::after{left:3px}
+
+/* DD fields */
+.ddf{display:flex;align-items:center;gap:10px;border:1.5px solid #e8ecf0;border-radius:14px;padding:12px 13px;background:#f8fafc;margin-bottom:8px;transition:all .15s;color:#0f1117}
+.ddf:active{background:#e8ecf0}
+.ddf-inner{flex:1}
+.ddf-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#94a3b8}
+.ddf-val{font-size:14px;font-weight:500;color:#0f1117 !important;margin-top:1px;background:#f8fafc !important;-webkit-text-fill-color:#0f1117 !important}
+.ddf-val.ph{color:#94a3b8 !important;-webkit-text-fill-color:#94a3b8 !important;font-weight:300}
+
+/* Filter groups */
+.fg{border-bottom:1px solid #e8ecf0}
+.fg:last-child{border-bottom:none}
+.fg-h{display:flex;align-items:center;justify-content:space-between;padding:13px 0;cursor:pointer}
+.fg-title{font-size:14px;font-weight:600;color:#0f1117;display:flex;align-items:center;gap:8px}
+.fg-title i{font-size:15px;color:#94a3b8}
+.fg-arr{font-size:15px;color:#94a3b8;transition:transform .2s}
+.fg.open .fg-arr{transform:rotate(180deg)}
+.fg-body{display:none;padding-bottom:14px}
+.fg.open .fg-body{display:block}
+
+/* SS Tab */
+.ss-tabs{display:flex;border-bottom:1px solid #e8ecf0;flex-shrink:0;padding:0 16px}
+.ss-tab{flex:1;padding:11px 0;text-align:center;font-size:12px;font-weight:500;color:#64748b;border-bottom:2px solid transparent;transition:all .15s}
+.ss-tab.on{color:#e52535;border-bottom-color:#e52535;font-weight:600}
+
+/* Picker */
+.pk-item{display:flex;align-items:center;justify-content:space-between;padding:13px 0;border-bottom:1px solid #e8ecf0;font-size:14px;font-weight:300;color:#0f1117}
+.pk-item:last-child{border-bottom:none}
+.pk-item.on{color:#e52535;font-weight:500}
+.pk-chk{width:18px;height:18px;border-radius:5px;border:1.5px solid #e8ecf0;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;flex-shrink:0}
+.pk-item.on .pk-chk{background:#e52535;border-color:#e52535;color:#fff}
+
+/* ══ ANNONCE SCREEN ══ */
+.ann-topbar{position:fixed;top:0;left:0;right:0;z-index:150;display:flex;align-items:center;justify-content:space-between;padding:calc(12px + env(safe-area-inset-top,0px)) 12px 12px}
+.ann-ibtn{width:38px;height:38px;border-radius:50%;background:rgba(15,17,23,.65);backdrop-filter:blur(8px);color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center}
+.ann-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:calc(76px + env(safe-area-inset-bottom,0px));scrollbar-width:none}
+.ann-scroll::-webkit-scrollbar{display:none}
+/* Gallery */
+.gal{height:268px;position:relative;overflow:hidden;background:#e2e8f0;flex-shrink:0}
+.gal img{width:100%;height:100%;object-fit:cover;display:block;transition:opacity .18s}
+.gal-dots{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);display:flex;gap:5px}
+.gal-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.4)}
+.gal-dot.on{background:#fff;width:18px;border-radius:3px}
+.gal-ct{position:absolute;bottom:10px;right:10px;background:rgba(15,17,23,.65);color:#fff;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px}
+.gal-nav{position:absolute;top:50%;transform:translateY(-50%);width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.82);display:flex;align-items:center;justify-content:center;font-size:17px;color:#0f1117}
+.gal-nav.prev{left:8px}.gal-nav.next{right:8px}
+.gal-thumbs{display:flex;gap:6px;padding:8px 12px;background:#fff;border-bottom:1px solid #e8ecf0;overflow-x:auto;scrollbar-width:none}
+.gal-thumbs::-webkit-scrollbar{display:none}
+.gal-thumb{width:52px;height:40px;border-radius:6px;overflow:hidden;border:2px solid transparent;flex-shrink:0}
+.gal-thumb.on{border-color:#e52535}
+.gal-thumb img{width:100%;height:100%;object-fit:cover}
+/* Ann info */
+.ann-block{background:#fff;padding:14px 13px;border-bottom:8px solid #f1f5f9}
+.ann-make{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:1.2px;color:#94a3b8}
+.ann-model{font-size:22px;font-weight:700;color:#0f1117;letter-spacing:-.4px;margin:2px 0 1px}
+.ann-sub{font-size:13px;color:#64748b;font-weight:300}
+.score-box{display:flex;align-items:center;gap:12px;background:rgba(229,37,53,.08);border-radius:14px;padding:12px;margin:12px 0}
+.score-n{font-family:'Syne',sans-serif;font-size:34px;font-weight:800;color:#e52535;line-height:1;flex-shrink:0;min-width:60px}
+.score-bars{flex:1;display:flex;flex-direction:column;gap:5px}
+.sbar{display:flex;align-items:center;gap:6px;font-size:10px;color:#94a3b8}
+.sbar-track{flex:1;height:3px;background:rgba(0,0,0,.07);border-radius:2px;overflow:hidden}
+.sbar-fill{height:100%;border-radius:2px}
+.ann-grid{display:grid;grid-template-columns:1fr 1fr;gap:1px;background:#e8ecf0;border:1px solid #e8ecf0;border-radius:10px;overflow:hidden;margin:12px 0}
+.ann-spec{background:#fff;padding:10px;text-align:center}
+.ann-spec i{font-size:17px;color:#94a3b8;display:block;margin-bottom:2px}
+.ann-spec-v{font-size:13px;font-weight:600;color:#0f1117}
+.ann-spec-l{font-size:9px;text-transform:uppercase;letter-spacing:.6px;color:#94a3b8;margin-top:2px}
+.ann-sec-title{font-size:13px;font-weight:700;color:#0f1117;margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.ann-sec-title i{color:#e52535}
+.spec-table{width:100%;font-size:13px;border-collapse:collapse}
+.spec-table tr{border-bottom:1px solid #e8ecf0}
+.spec-table tr:last-child{border-bottom:none}
+.spec-table td{padding:8px 0}
+.spec-table td:first-child{color:#64748b;font-weight:300;width:46%}
+.spec-table td:last-child{font-weight:500;text-align:right}
+/* Torque chat */
+.tc{background:#0f1117;padding:14px 13px}
+.tc-hdr{display:flex;align-items:center;gap:9px;margin-bottom:12px}
+.tc-av{width:32px;height:32px;border-radius:50%;background:#e52535;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:11px;font-weight:800;color:#fff;flex-shrink:0}
+.tc-name{font-size:13px;font-weight:600;color:#fff}
+.tc-status{font-size:10px;color:rgba(255,255,255,.4);display:flex;align-items:center;gap:4px;margin-top:1px}
+.tc-dot{width:5px;height:5px;border-radius:50%;background:#16a34a}
+.tc-msgs{display:flex;flex-direction:column;gap:8px;margin-bottom:10px;max-height:180px;overflow-y:auto;scrollbar-width:none}
+.tc-msgs::-webkit-scrollbar{display:none}
+.tc-msg{display:flex;align-items:flex-start;gap:7px}
+.tc-msg.u{flex-direction:row-reverse}
+.tc-bbl{background:rgba(255,255,255,.08);color:rgba(255,255,255,.82);font-size:12px;font-weight:300;padding:8px 11px;border-radius:12px;border-top-left-radius:3px;line-height:1.55;max-width:82%}
+.tc-msg.u .tc-bbl{background:#e52535;color:#fff;border-radius:12px;border-top-right-radius:3px}
+.tc-qr{display:flex;gap:5px;overflow-x:auto;scrollbar-width:none;margin-bottom:10px}
+.tc-qr::-webkit-scrollbar{display:none}
+.tc-qbtn{flex-shrink:0;padding:5px 11px;border-radius:20px;font-size:11px;font-weight:500;color:rgba(255,255,255,.6);background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.13)}
+.tc-row{display:flex;gap:7px}
+.tc-inp{flex:1;border:1px solid rgba(255,255,255,.14);border-radius:10px;padding:9px 12px;font-size:13px;color:#fff;background:rgba(255,255,255,.07)}
+.tc-inp::placeholder{color:rgba(255,255,255,.3)}
+.tc-send{width:38px;height:38px;border-radius:10px;background:#e52535;color:#fff;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+/* Similar */
+.sim-row{display:flex;gap:8px;overflow-x:auto;scrollbar-width:none;padding:0 13px 4px}
+.sim-row::-webkit-scrollbar{display:none}
+.sim-card{width:142px;flex-shrink:0;background:#fff;border-radius:14px;border:1px solid #e8ecf0;overflow:hidden}
+.sim-img{height:88px;overflow:hidden;background:#e2e8f0}
+.sim-img img{width:100%;height:100%;object-fit:cover}
+.sim-body{padding:8px 9px}
+.sim-make{font-size:9px;font-weight:700;text-transform:uppercase;color:#94a3b8;letter-spacing:.8px}
+.sim-model{font-size:13px;font-weight:700;color:#0f1117}
+.sim-price{font-size:14px;font-weight:700;color:#0f1117;margin-top:3px;font-family:-apple-system,system-ui,sans-serif}
+/* Price bar */
+.price-bar{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e8ecf0;padding:10px 13px calc(10px + env(safe-area-inset-bottom,0px));z-index:100;display:flex;align-items:center;gap:10px;box-shadow:0 -4px 20px rgba(0,0,0,.07)}
+.pb-price{flex:1}
+.pb-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:#94a3b8}
+.pb-val{font-size:22px;font-weight:700;color:#0f1117;letter-spacing:-.5px;font-family:-apple-system,system-ui,sans-serif;line-height:1.1}
+.pb-fav{width:42px;height:42px;border-radius:10px;border:1.5px solid #e8ecf0;display:flex;align-items:center;justify-content:center;font-size:18px;color:#94a3b8;flex-shrink:0;transition:all .15s}
+.pb-fav.on{color:#e52535;border-color:#e52535}
+.pb-cta{flex:2;background:#e52535;color:#fff;border-radius:10px;padding:12px;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:7px}
+
+/* ══ PAGE HEADER (Favoris / Alertes) ══ */
+.ph{background:#0f1117;padding:calc(12px + env(safe-area-inset-top,0px)) 14px 14px;flex-shrink:0}
+.ph-title{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#fff;letter-spacing:-.3px}
+.ph-sub{font-size:12px;color:rgba(255,255,255,.35);font-weight:300;margin-top:2px}
+.ph-stats{display:flex;margin-top:14px}
+.ph-stat{flex:1;text-align:center;border-right:1px solid rgba(255,255,255,.08)}
+.ph-stat:last-child{border-right:none}
+.ph-stat-n{font-family:'Syne',sans-serif;font-size:20px;font-weight:800;color:#fff;line-height:1}
+.ph-stat-l{font-size:9px;color:rgba(255,255,255,.3);font-weight:600;text-transform:uppercase;letter-spacing:.5px;margin-top:3px}
+.page-list{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:10px 12px calc(80px + env(safe-area-inset-bottom,0px));scrollbar-width:none}
+.page-list::-webkit-scrollbar{display:none}
+
+/* Fav card */
+.fav-card{background:#fff;border-radius:14px;border:1px solid #e8ecf0;overflow:hidden;margin-bottom:10px}
+.fav-img{height:160px;position:relative;overflow:hidden;background:#e2e8f0;cursor:pointer}
+.fav-img img{width:100%;height:100%;object-fit:cover}
+
+/* Alert card */
+.al-card{background:#fff;border-radius:14px;border:1px solid #e8ecf0;overflow:hidden;margin-bottom:10px}
+.al-card.triggered{border-color:#d97706;border-width:1.5px}
+.al-hit{background:linear-gradient(90deg,#d97706,#f59e0b);padding:10px 13px;display:flex;align-items:center;gap:9px}
+.al-top{display:flex;align-items:center;gap:10px;padding:12px 13px;border-bottom:1px solid #e8ecf0}
+.al-thumb{width:48px;height:38px;border-radius:7px;overflow:hidden;background:#e2e8f0;flex-shrink:0}
+.al-thumb img{width:100%;height:100%;object-fit:cover}
+.al-info{flex:1;min-width:0}
+.al-title{font-size:14px;font-weight:600;color:#0f1117;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.al-sub{font-size:11px;color:#64748b;font-weight:300;margin-top:1px}
+.al-sw{width:42px;height:24px;border-radius:12px;border:none;position:relative;flex-shrink:0}
+.al-sw.on{background:#16a34a}.al-sw.off{background:#e2e8f0}
+.al-sw::after{content:'';position:absolute;top:3px;width:18px;height:18px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:left .2s}
+.al-sw.on::after{left:21px}.al-sw.off::after{left:3px}
+.al-prices{display:flex;align-items:center;padding:12px 13px;border-bottom:1px solid #e8ecf0}
+.alp-val{font-size:19px;font-weight:700;font-family:-apple-system,system-ui,sans-serif;color:#0f1117;letter-spacing:-.4px}
+.alp-val.hit{color:#16a34a}
+.alp-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#94a3b8;margin-bottom:2px}
+.al-prog{padding:10px 13px;border-bottom:1px solid #e8ecf0}
+.al-prog-bar{height:5px;background:#e8ecf0;border-radius:3px;overflow:hidden;margin-top:6px}
+.al-prog-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,#16a34a,#22c55e)}
+.al-actions{display:flex;gap:7px;padding:10px 13px}
+.al-btn{flex:1;padding:9px 0;border-radius:10px;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:4px}
+.al-btn.view{background:#eff6ff;color:#1d4ed8}
+.al-btn.edit{background:#f8fafc;color:#64748b}
+.al-btn.del{flex:0;padding:9px 12px;background:#fef2f2;color:#dc2626}
+
+/* FAB */
+.fab{position:fixed;bottom:calc(82px + env(safe-area-inset-bottom,0px));right:16px;width:52px;height:52px;border-radius:50%;background:#e52535;color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 18px rgba(229,37,53,.4);z-index:150}
+
+/* ══ AUTH ERR ══ */
+.auth-err{background:#fef2f2;color:#dc2626;font-size:12px;padding:10px 12px;border-radius:10px;margin-bottom:12px;display:none}
+
+/* ══ TOAST ══ */
+.toast{position:fixed;bottom:calc(82px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:#0f1117;color:#fff;font-size:13px;font-weight:500;padding:10px 18px;border-radius:10px;box-shadow:0 4px 20px rgba(0,0,0,.2);z-index:9999;display:none;white-space:nowrap;animation:fadeUp .2s ease}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ HOME ══════════════ -->
+<div class="screen active" id="sc-home">
+  <div class="app-header">
+    <div class="logo">Auto<span>Europe</span></div>
+    <button class="hdr-btn" onclick="openSheet('sh-auth')"><i class="ti ti-bell"></i></button>
+    <button class="hdr-btn" id="btn-auth" onclick="openSheet('sh-auth')"><i class="ti ti-user-circle"></i></button>
+  </div>
+  <div class="search-bar">
+    <div class="search-pill" onclick="openSearch()">
+      <i class="ti ti-search" style="font-size:17px;color:#94a3b8;flex-shrink:0"></i>
+      <div class="search-pill-text" id="search-label">Marque, modèle, mots-clés…</div>
+    </div>
+    <div class="filter-icon" onclick="openSheet('sh-filter')">
+      <i class="ti ti-adjustments-horizontal"></i>
+      <div class="f-dot" id="fdot"></div>
+    </div>
+  </div>
+  <div class="chips-row">
+    <div class="chip on" onclick="qfTap(this,'')"><i class="ti ti-list"></i>Tout</div>
+    <div class="chip" onclick="qfTap(this,'suv')"><i class="ti ti-car-suv"></i>SUV</div>
+    <div class="chip" onclick="qfTap(this,'electrique')"><i class="ti ti-plug"></i>Électrique</div>
+    <div class="chip" onclick="qfTap(this,'hybride')"><i class="ti ti-leaf"></i>Hybride</div>
+    <div class="chip" onclick="qfTap(this,'diesel')"><i class="ti ti-gas-station"></i>Diesel</div>
+    <div class="chip" onclick="qfTap(this,'essence')"><i class="ti ti-gas-station"></i>Essence</div>
+    <div class="chip" onclick="qfTap(this,'ct')"><i class="ti ti-circle-check"></i>CT valide</div>
+    <div class="chip" onclick="qfTap(this,'1er')"><i class="ti ti-user"></i>1er proprio</div>
+  </div>
+  <div class="results-bar">
+    <div class="rb-count" id="rb-count"><b>–</b> annonces</div>
+    <select class="rb-sort" onchange="sortBy(this.value)">
+      <option value="score">Score Torque ↓</option>
+      <option value="price_asc">Prix ↑</option>
+      <option value="price_desc">Prix ↓</option>
+      <option value="km_asc">Km ↑</option>
+      <option value="year_desc">Récents</option>
+    </select>
+  </div>
+  <div class="cars-list" id="cars-list">
+    <div class="state-loading"><div class="spin"><i class="ti ti-loader-2"></i></div><div style="font-size:13px;font-weight:300">Chargement des annonces…</div></div>
+  </div>
+</div>
+
+<!-- ══════════════ ANNONCE ══════════════ -->
+<div class="screen" id="sc-ann">
+  <div class="ann-topbar">
+    <button class="ann-ibtn" onclick="goBack()"><i class="ti ti-arrow-left"></i></button>
+    <button class="ann-ibtn" onclick="shareAnn()"><i class="ti ti-share"></i></button>
+  </div>
+  <div class="ann-scroll" id="ann-scroll"></div>
+  <div class="price-bar" id="price-bar" style="display:none">
+    <div class="pb-price"><div class="pb-lbl">Prix de vente</div><div class="pb-val" id="pb-val">–</div></div>
+    <button class="pb-fav" id="pb-fav" onclick="toggleAnnFav()"><i class="ti ti-heart"></i></button>
+    <button class="pb-cta" onclick="goSrc()"><i class="ti ti-external-link"></i>Voir l'annonce</button>
+  </div>
+</div>
+
+<!-- ══════════════ FAVORIS ══════════════ -->
+<div class="screen" id="sc-fav">
+  <div class="ph">
+    <div class="ph-title">Mes favoris</div>
+    <div class="ph-sub" id="fav-sub">–</div>
+    <div class="ph-stats">
+      <div class="ph-stat"><div class="ph-stat-n" id="fav-n">–</div><div class="ph-stat-l">Sauvegardés</div></div>
+      <div class="ph-stat"><div class="ph-stat-n" style="color:#22c55e">0</div><div class="ph-stat-l">Nouveaux prix</div></div>
+      <div class="ph-stat"><div class="ph-stat-n" id="fav-pays">–</div><div class="ph-stat-l">Pays</div></div>
+    </div>
+  </div>
+  <div class="page-list" id="fav-list"></div>
+</div>
+
+<!-- ══════════════ ALERTES ══════════════ -->
+<div class="screen" id="sc-al">
+  <div class="ph">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div><div class="ph-title">Alertes prix</div><div class="ph-sub" id="al-sub">–</div></div>
+      <button onclick="openSheet('sh-al-new')" style="width:36px;height:36px;border-radius:10px;background:#e52535;color:#fff;font-size:18px;display:flex;align-items:center;justify-content:center"><i class="ti ti-plus"></i></button>
+    </div>
+    <div class="ph-stats" style="margin-top:14px">
+      <div class="ph-stat"><div class="ph-stat-n" id="al-n">–</div><div class="ph-stat-l">Total</div></div>
+      <div class="ph-stat"><div class="ph-stat-n" style="color:#d97706" id="al-hit">–</div><div class="ph-stat-l">Déclenchées</div></div>
+      <div class="ph-stat"><div class="ph-stat-n" style="color:#22c55e" id="al-act">–</div><div class="ph-stat-l">Actives</div></div>
+    </div>
+  </div>
+  <div class="page-list" id="al-list"></div>
+  <button class="fab" onclick="openSheet('sh-al-new')"><i class="ti ti-bell-plus"></i></button>
+</div>
+
+<!-- ══ BOTTOM NAV ══ -->
+<nav class="bottom-nav">
+  <div class="bn-item on" id="bn-home" onclick="goScreen('home',this)"><i class="ti ti-home"></i><span>Accueil</span></div>
+  <div class="bn-item" id="bn-search" onclick="openSearch()"><i class="ti ti-search"></i><span>Recherche</span></div>
+  <div class="bn-plus" onclick="window.location.href='deposer.html'"><div class="bn-plus-icon"><i class="ti ti-plus"></i></div><span>Déposer</span></div>
+  <div class="bn-item" id="bn-fav" onclick="goScreen('fav',this)" style="position:relative"><i class="ti ti-heart"></i><span>Favoris</span><div class="bn-badge" id="badge-fav"></div></div>
+  <div class="bn-item" id="bn-al" onclick="goScreen('al',this)" style="position:relative"><i class="ti ti-bell"></i><span>Alertes</span><div class="bn-badge" id="badge-al" style="background:#d97706"></div></div>
+</nav>
+
+<!-- ══ OVERLAY ══ -->
+<div class="overlay" id="overlay" onclick="closeSheet()"></div>
+
+<!-- ══ SEARCH SCREEN ══ -->
+<div id="sc-search" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;background:#fff;z-index:300;flex-direction:column;overflow:hidden">
+
+  <!-- Header -->
+  <div style="background:#fff;border-bottom:1px solid #e8ecf0;padding:calc(12px + env(safe-area-inset-top,0px)) 14px 0;flex-shrink:0">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <button onclick="closeSearch()" style="width:38px;height:38px;border-radius:50%;background:#f1f5f9;border:none;display:flex;align-items:center;justify-content:center;font-size:18px;color:#64748b;cursor:pointer"><i class="ti ti-arrow-left"></i></button>
+      <div style="font-size:16px;font-weight:700;color:#0f1117">Recherche</div>
+      <button onclick="resetSearch()" style="background:none;border:none;font-size:13px;color:#e52535;font-weight:600;font-family:inherit;cursor:pointer">Réinitialiser</button>
+    </div>
+    <!-- Tabs -->
+    <div style="display:flex">
+      <div class="ss-tab on" onclick="ssTap(this)">Occasion</div>
+      <div class="ss-tab" onclick="ssTap(this)">Neuf</div>
+      <div class="ss-tab" onclick="ssTap(this)">Leasing</div>
+      <div class="ss-tab" onclick="ssTap(this)" style="display:flex;align-items:center;justify-content:center;gap:3px"><i class="ti ti-plug" style="font-size:12px"></i>Élec.</div>
+    </div>
+  </div>
+
+  <!-- Scrollable content -->
+  <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:14px 16px 0 14px;scrollbar-width:none">
+    <!-- Marque -->
+    <div class="ddf" autocomplete="off" onclick="openPicker('make')">
+      <i class="ti ti-car" style="font-size:18px;color:#94a3b8"></i>
+      <div class="ddf-inner" style="background:transparent"><div class="ddf-lbl" style="background:transparent">Marque</div><span class="ddf-val ph" id="dv-make" style="background:#f8fafc;color:#94a3b8;-webkit-text-fill-color:#94a3b8;font-size:14px;font-weight:300">Toutes marques</span></div>
+      <i class="ti ti-chevron-right" style="font-size:14px;color:#94a3b8"></i>
+    </div>
+    <!-- Modèle -->
+    <div class="ddf" autocomplete="off" onclick="openPicker('model')">
+      <i class="ti ti-adjustments" style="font-size:18px;color:#94a3b8"></i>
+      <div class="ddf-inner" style="background:transparent"><div class="ddf-lbl" style="background:transparent">Modèle</div><span class="ddf-val ph" id="dv-model" style="background:#f8fafc;color:#94a3b8;-webkit-text-fill-color:#94a3b8;font-size:14px;font-weight:300">Tous modèles</span></div>
+      <i class="ti ti-chevron-right" style="font-size:14px;color:#94a3b8"></i>
+    </div>
+    <!-- Année / Km -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;overflow:visible">
+      <div class="ddf" style="margin-bottom:0" onclick="openPicker('year')">
+        <i class="ti ti-calendar" style="font-size:17px;color:#94a3b8"></i>
+        <div class="ddf-inner" style="background:transparent"><div class="ddf-lbl" style="background:transparent">Année min</div><span class="ddf-val ph" id="dv-year" style="background:#f8fafc;color:#94a3b8;-webkit-text-fill-color:#94a3b8;font-size:14px;font-weight:300">Toutes</span></div>
+      </div>
+      <div class="ddf" style="margin-bottom:0" onclick="openPicker('km')">
+        <i class="ti ti-road" style="font-size:17px;color:#94a3b8"></i>
+        <div class="ddf-inner" style="background:transparent"><div class="ddf-lbl" style="background:transparent">Km max</div><span class="ddf-val ph" id="dv-km" style="background:#f8fafc;color:#94a3b8;-webkit-text-fill-color:#94a3b8;font-size:14px;font-weight:300">Tous</span></div>
+      </div>
+    </div>
+    <!-- Budget -->
+    <div class="ddf" autocomplete="off" onclick="openPicker('price')">
+      <i class="ti ti-currency-euro" style="font-size:18px;color:#94a3b8"></i>
+      <div class="ddf-inner" style="background:transparent"><div class="ddf-lbl" style="background:transparent">Budget max</div><span class="ddf-val ph" id="dv-price" style="background:#f8fafc;color:#94a3b8;-webkit-text-fill-color:#94a3b8;font-size:14px;font-weight:300">Sans limite</span></div>
+      <i class="ti ti-chevron-right" style="font-size:14px;color:#94a3b8"></i>
+    </div>
+    <!-- Énergie -->
+    <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:#94a3b8;margin-bottom:8px">Énergie</div>
+    <div class="fchips" id="energy-chips">
+      <div class="fc" onclick="toggleFC(this,'diesel')">Diesel</div>
+      <div class="fc" onclick="toggleFC(this,'essence')">Essence</div>
+      <div class="fc" onclick="toggleFC(this,'hybride')">Hybride</div>
+      <div class="fc" onclick="toggleFC(this,'electrique')">Électrique</div>
+      <div class="fc" onclick="toggleFC(this,'gpl')">GPL</div>
+    </div>
+    <!-- Historique -->
+    <div id="ftog-wrap">
+      <div class="ftog"><span>CT valide uniquement</span><button class="fsw off" onclick="this.className='fsw '+(this.classList.contains('on')?'off':'on')"></button></div>
+      <div class="ftog"><span>1er propriétaire</span><button class="fsw off" onclick="this.className='fsw '+(this.classList.contains('on')?'off':'on')"></button></div>
+      <div class="ftog"><span>Non accidenté</span><button class="fsw off" onclick="this.className='fsw '+(this.classList.contains('on')?'off':'on')"></button></div>
+    </div>
+    <div style="height:90px"></div>
+  </div>
+
+  <!-- Sticky footer -->
+  <div style="background:#fff;border-top:1px solid #e8ecf0;padding:12px 14px calc(12px + env(safe-area-inset-bottom,0px);flex-shrink:0;display:flex;gap:8px);display:flex;gap:8px;flex-shrink:0">
+    <button onclick="closeSearch()" style="flex:1;background:#fff;color:#64748b;border:1.5px solid #e8ecf0;border-radius:10px;padding:13px;font-size:14px;font-weight:500;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px"><i class="ti ti-arrow-left" style="font-size:14px"></i>Retour</button>
+    <button onclick="doSearch()" style="flex:2;background:#e52535;color:#fff;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:700;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:7px"><i class="ti ti-search"></i>Voir <span id="ss-count">–</span></button>
+  </div>
+</div>
+
+<!-- ══ PICKER SCREEN ══ -->
+<div id="sc-picker" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;background:#fff;z-index:400;flex-direction:column;overflow:hidden">
+  <div style="background:#fff;border-bottom:1px solid #e8ecf0;padding:calc(12px + env(safe-area-inset-top,0px)) 14px 12px;display:flex;align-items:center;gap:12px;flex-shrink:0">
+    <button onclick="closePicker()" style="width:38px;height:38px;border-radius:50%;background:#f1f5f9;border:none;display:flex;align-items:center;justify-content:center;font-size:18px;color:#64748b;cursor:pointer"><i class="ti ti-arrow-left"></i></button>
+    <div style="font-size:16px;font-weight:700;color:#0f1117;flex:1" id="pk-title">Choisir</div>
+  </div>
+  <div id="pk-search-wrap" style="padding:10px 14px;background:#fff;border-bottom:1px solid #e8ecf0;flex-shrink:0;display:none">
+    <input id="pk-search" placeholder="Rechercher une marque…" oninput="pkFilter(this.value)" style="width:100%;border:1.5px solid #e8ecf0;border-radius:10px;padding:11px 13px;font-size:15px;background:#f8fafc;color:#0f1117;font-family:inherit">
+  </div>
+  <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding:0 14px" id="pk-list"></div>
+</div>
+
+<!-- ══ FILTER SHEET ══ -->
+<div class="sheet" id="sh-filter" style="max-height:90vh">
+  <div class="sh-handle"></div>
+  <div class="sh-hdr">
+    <div class="sh-title"><i class="ti ti-adjustments-horizontal"></i>Filtres avancés</div>
+    <button class="sh-close" onclick="closeSheet()"><i class="ti ti-x"></i></button>
+  </div>
+  <div class="sh-body" style="background:#ffffff;color:#0f1117">
+    <div class="fg open">
+      <div class="fg-h" onclick="this.parentElement.classList.toggle('open')"><div class="fg-title"><i class="ti ti-currency-euro"></i>Budget</div><i class="ti ti-chevron-down fg-arr"></i></div>
+      <div class="fg-body">
+        <div class="fchips">
+          <div class="fc" onclick="setPriceQ(this,'5000')">&lt;5k€</div>
+          <div class="fc on" onclick="setPriceQ(this,'10000')">&lt;10k€</div>
+          <div class="fc" onclick="setPriceQ(this,'15000')">&lt;15k€</div>
+          <div class="fc" onclick="setPriceQ(this,'20000')">&lt;20k€</div>
+          <div class="fc" onclick="setPriceQ(this,'30000')">&lt;30k€</div>
+        </div>
+      </div>
+    </div>
+    <div class="fg">
+      <div class="fg-h" onclick="this.parentElement.classList.toggle('open')"><div class="fg-title"><i class="ti ti-car"></i>Carrosserie</div><i class="ti ti-chevron-down fg-arr"></i></div>
+      <div class="fg-body"><div class="fchips"><div class="fc" onclick="this.classList.toggle('on')">Berline</div><div class="fc" onclick="this.classList.toggle('on')">SUV</div><div class="fc" onclick="this.classList.toggle('on')">Break</div><div class="fc" onclick="this.classList.toggle('on')">Citadine</div><div class="fc" onclick="this.classList.toggle('on')">Coupé</div><div class="fc" onclick="this.classList.toggle('on')">Cabriolet</div></div></div>
+    </div>
+    <div class="fg">
+      <div class="fg-h" onclick="this.parentElement.classList.toggle('open')"><div class="fg-title"><i class="ti ti-map-pin"></i>Pays source</div><i class="ti ti-chevron-down fg-arr"></i></div>
+      <div class="fg-body"><div class="fchips"><div class="fc on" onclick="this.classList.toggle('on')">🇫🇷 France</div><div class="fc on" onclick="this.classList.toggle('on')">🇩🇪 Allemagne</div><div class="fc" onclick="this.classList.toggle('on')">🇵🇱 Pologne</div><div class="fc" onclick="this.classList.toggle('on')">🇧🇪 Belgique</div><div class="fc" onclick="this.classList.toggle('on')">🇨🇿 Tchéquie</div><div class="fc" onclick="this.classList.toggle('on')">🇪🇸 Espagne</div></div></div>
+    </div>
+    <div class="fg">
+      <div class="fg-h" onclick="this.parentElement.classList.toggle('open')"><div class="fg-title"><i class="ti ti-cpu"></i>Score Torque min</div><i class="ti ti-chevron-down fg-arr"></i></div>
+      <div class="fg-body"><div class="fchips"><div class="fc" onclick="xclFC(this,'ts')">60+</div><div class="fc on" onclick="xclFC(this,'ts')">70+</div><div class="fc" onclick="xclFC(this,'ts')">80+</div><div class="fc" onclick="xclFC(this,'ts')">90+</div></div></div>
+    </div>
+    <div style="height:6px"></div>
+  </div>
+  <div class="sh-footer">
+    <button onclick="closeSheet();doSearch()" style="width:100%;background:#e52535;color:#fff;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:700;font-family:inherit">Appliquer</button>
+  </div>
+</div>
+
+<!-- ══ AUTH SHEET ══ -->
+<div class="sheet" id="sh-auth">
+  <div class="sh-handle"></div>
+  <div id="auth-guest">
+    <div class="sh-hdr"><div class="sh-title"><i class="ti ti-user-circle"></i>Connexion</div><button class="sh-close" onclick="closeSheet()"><i class="ti ti-x"></i></button></div>
+    <div class="sh-body" style="background:#ffffff;color:#0f1117">
+      <div style="font-size:13px;color:#64748b;font-weight:300;margin-bottom:16px;line-height:1.6">Connectez-vous pour vos favoris, alertes et annonces personnalisées.</div>
+      <label class="fl">Email</label><input id="au-email" type="email" class="fi" placeholder="votre@email.com">
+      <label class="fl">Mot de passe</label><input id="au-pw" type="password" class="fi" placeholder="••••••••">
+      <div class="auth-err" id="au-err"></div>
+    </div>
+    <div class="sh-footer" style="flex-direction:column;gap:8px">
+      <button id="au-btn" onclick="doLogin()" style="width:100%;background:#e52535;color:#fff;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:700;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px"><i class="ti ti-login"></i>Se connecter</button>
+      <button onclick="switchAuth('reg')" style="width:100%;background:#fff;color:#64748b;border:1px solid #e8ecf0;border-radius:10px;padding:12px;font-size:14px;font-family:inherit">Créer un compte</button>
+    </div>
+  </div>
+  <div id="auth-reg" style="display:none">
+    <div class="sh-hdr"><div class="sh-title"><i class="ti ti-user-plus"></i>Inscription</div><button class="sh-close" onclick="closeSheet()"><i class="ti ti-x"></i></button></div>
+    <div class="sh-body" style="background:#ffffff;color:#0f1117">
+      <label class="fl">Prénom</label><input id="rg-name" type="text" class="fi" placeholder="Votre prénom">
+      <label class="fl">Email</label><input id="rg-email" type="email" class="fi" placeholder="votre@email.com">
+      <label class="fl">Mot de passe</label><input id="rg-pw" type="password" class="fi" placeholder="••••••••">
+      <div class="auth-err" id="rg-err"></div>
+    </div>
+    <div class="sh-footer" style="flex-direction:column;gap:8px">
+      <button onclick="doRegister()" style="width:100%;background:#e52535;color:#fff;border:none;border-radius:10px;padding:14px;font-size:15px;font-weight:700;font-family:inherit">Créer mon compte</button>
+      <button onclick="switchAuth('guest')" style="width:100%;background:#fff;color:#64748b;border:1px solid #e8ecf0;border-radius:10px;padding:12px;font-size:14px;font-family:inherit">Déjà un compte</button>
+    </div>
+  </div>
+  <div id="auth-in" style="display:none">
+    <div class="sh-hdr"><div class="sh-title"><i class="ti ti-user-check" style="color:#16a34a"></i>Mon compte</div><button class="sh-close" onclick="closeSheet()"><i class="ti ti-x"></i></button></div>
+    <div class="sh-body" style="background:#ffffff;color:#0f1117">
+      <div style="display:flex;align-items:center;gap:12px;background:#f8fafc;border-radius:14px;padding:14px;margin-bottom:16px">
+        <div style="width:44px;height:44px;border-radius:50%;background:rgba(229,37,53,.08);display:flex;align-items:center;justify-content:center;color:#e52535;font-size:22px"><i class="ti ti-user"></i></div>
+        <div><div style="font-size:15px;font-weight:600;color:#0f1117" id="in-name">–</div><div style="font-size:12px;color:#64748b;font-weight:300" id="in-email">–</div></div>
+      </div>
+      <div onclick="goScreen('fav',document.getElementById('bn-fav'));closeSheet()" style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #e8ecf0;cursor:pointer"><i class="ti ti-heart" style="font-size:20px;color:#94a3b8;width:24px"></i><span style="flex:1;font-size:14px">Mes favoris</span><i class="ti ti-chevron-right" style="color:#94a3b8"></i></div>
+      <div onclick="goScreen('al',document.getElementById('bn-al'));closeSheet()" style="display:flex;align-items:center;gap:12px;padding:12px 0;border-bottom:1px solid #e8ecf0;cursor:pointer"><i class="ti ti-bell" style="font-size:20px;color:#94a3b8;width:24px"></i><span style="flex:1;font-size:14px">Mes alertes</span><i class="ti ti-chevron-right" style="color:#94a3b8"></i></div>
+      <div onclick="window.location.href='deposer.html'" style="display:flex;align-items:center;gap:12px;padding:12px 0;cursor:pointer"><i class="ti ti-plus-circle" style="font-size:20px;color:#94a3b8;width:24px"></i><span style="flex:1;font-size:14px">Déposer une annonce</span><i class="ti ti-chevron-right" style="color:#94a3b8"></i></div>
+      <div onclick="showMesAnnonces()" style="display:flex;align-items:center;gap:12px;padding:12px 0;cursor:pointer"><i class="ti ti-list" style="font-size:20px;color:#94a3b8;width:24px"></i><span style="flex:1;font-size:14px">Mes annonces</span><i class="ti ti-chevron-right" style="color:#94a3b8"></i></div>
+    </div>
+    <div class="sh-footer"><button onclick="doLogout()" style="width:100%;background:#fef2f2;color:#dc2626;border:1px solid #fecaca;border-radius:10px;padding:13px;font-size:14px;font-weight:600;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:7px"><i class="ti ti-logout"></i>Se déconnecter</button></div>
+  </div>
+</div>
+
+<!-- ══ ALERT NEW SHEET ══ -->
+<div class="sheet" id="sh-al-new">
+  <div class="sh-handle"></div>
+  <div class="sh-hdr"><div class="sh-title"><i class="ti ti-bell-plus"></i>Nouvelle alerte</div><button class="sh-close" onclick="closeSheet()"><i class="ti ti-x"></i></button></div>
+  <div class="sh-body" style="background:#ffffff;color:#0f1117">
+    <label class="fl">Véhicule</label><select class="fi" id="alnew-veh"><option>Choisir depuis mes favoris…</option></select>
+    <label class="fl">Prix cible (€)</label><input id="alnew-price" type="number" class="fi" placeholder="Ex : 8 000">
+    <label class="fl">Notification si baisse de</label>
+    <select class="fi"><option>N'importe quelle baisse</option><option selected>≥ 500 €</option><option>≥ 1 000 €</option></select>
+  </div>
+  <div class="sh-footer">
+    <button onclick="closeSheet()" style="flex:1;background:#fff;color:#64748b;border:1.5px solid #e8ecf0;border-radius:10px;padding:13px;font-size:14px;font-weight:500;font-family:inherit">Annuler</button>
+    <button onclick="createAlert()" style="flex:2;background:#e52535;color:#fff;border:none;border-radius:10px;padding:13px;font-size:15px;font-weight:700;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:7px"><i class="ti ti-bell-check"></i>Créer</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ══ CONFIG ══
+const API = 'https://autoeurope-backend-production.up.railway.app';
+const DEF_IMGS = [
+  'https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=600&q=75',
+  'https://images.unsplash.com/photo-1471479917193-f00955256257?w=600&q=75',
+  'https://images.unsplash.com/photo-1542362567-b07e54358753?w=600&q=75',
+  'https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=600&q=75',
+  'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?w=600&q=75',
+];
+
+// ══ STATE ══
+var authToken=null,authUser=null;
+var params={},sortVal='score';
+var curAnn=null;
+var sMake='',sModel='',sYear='',sKm='',sPrice='';
+var sEnergy=[];
+var curSheet=null,curPicker=null;
+var screenStack=['home'];
+var galIdx=0,galImgs=[];
+
+try{var _a=JSON.parse(sessionStorage.getItem('ae_auth')||'null');if(_a){authToken=_a.token;authUser=_a.user;}}catch(e){}
+
+// ══ UTILS ══
+function fmt(p){return p?p.toLocaleString('fr-FR')+' €':'–';}
+function fmtKm(k){return k?k.toLocaleString('fr-FR')+' km':'–';}
+function flag(c){return{FR:'🇫🇷',DE:'🇩🇪',PL:'🇵🇱',BE:'🇧🇪',CZ:'🇨🇿',ES:'🇪🇸',IT:'🇮🇹',NL:'🇳🇱'}[c]||'';}
+function fuel(f){return{diesel:'Diesel',essence:'Essence',hybride:'Hybride',hybrid:'Hybride',electrique:'Électrique',electric:'Électrique',gpl:'GPL'}[(f||'').toLowerCase()]||f||'';}
+function carImg(car){return (car.photos&&car.photos[0])||DEF_IMGS[(car.make||'').length%DEF_IMGS.length];}
+function getFavs(){try{return JSON.parse(localStorage.getItem('ae_favs')||'[]');}catch(e){return[];}}
+function saveFavs(a){localStorage.setItem('ae_favs',JSON.stringify(a));}
+function isFav(id){return getFavs().includes(id);}
+
+var _tt;
+function showToast(m){var t=document.getElementById('toast');t.textContent=m;t.style.display='block';clearTimeout(_tt);_tt=setTimeout(()=>t.style.display='none',2500);}
+
+
+function openSearch(){
+  // Fermer les sheets ouverts
+  if(curSheet){ document.getElementById(curSheet)?.classList.remove('on'); curSheet=null; }
+  var ov = document.getElementById('overlay');
+  if(ov) ov.classList.remove('on');
+  document.body.style.overflow='';
+  // Ouvrir le screen search
+  var el = document.getElementById('sc-search');
+  if(el) el.style.display='flex';
+  if(screenStack[screenStack.length-1]!=='search') screenStack.push('search');
+  // Sync count
+  var rb = document.getElementById('rb-count');
+  var ss = document.getElementById('ss-count');
+  if(rb && ss){ var b=rb.querySelector('b'); if(b) ss.textContent=b.textContent; }
+// Set current result count
+  var cnt = document.getElementById('rb-count');
+  var ss = document.getElementById('ss-count');
+  if(cnt && ss) ss.textContent = cnt.querySelector('b')?.textContent || '–';
+}
+function closeSearch(){
+  document.getElementById('sc-search').style.display='none';
+  document.getElementById('sc-picker').style.display='none';
+  if(screenStack[screenStack.length-1]==='picker') screenStack.pop();
+  if(screenStack[screenStack.length-1]==='search') screenStack.pop();
+  var prev=screenStack[screenStack.length-1]||'home';
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  var sc=document.getElementById('sc-'+prev);
+  if(sc) sc.classList.add('active');
+  var bn=document.getElementById('bn-'+prev);
+  document.querySelectorAll('.bn-item').forEach(function(b){b.classList.remove('on');});
+  if(bn) bn.classList.add('on');
+}
+// ══ SCREENS ══
+function goScreen(id,navEl){
+  // Search and picker are overlays, not screens
+  if(id==='search'){
+    document.getElementById('sc-search').style.display='flex';
+    screenStack.push('search');
+    return;
+  }
+  if(id==='picker'){
+    document.getElementById('sc-picker').style.display='flex';
+    screenStack.push('picker');
+    return;
+  }
+  // Hide overlays
+  document.getElementById('sc-search').style.display='none';
+  document.getElementById('sc-picker').style.display='none';
+  // Normal screen switch
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sc-'+id).classList.add('active');
+  document.querySelectorAll('.bn-item').forEach(b=>b.classList.remove('on'));
+  if(navEl) navEl.classList.add('on');
+  document.querySelectorAll('.fab').forEach(f=>f.style.display=id==='al'?'flex':'none');
+  var pb=document.getElementById('price-bar');
+  if(pb) pb.style.display=id==='ann'?'flex':'none';
+  if(id==='fav') loadFavoris();
+  if(id==='al') loadAlertes();
+  screenStack.push(id);
+}
+function goBack(){
+  if(document.getElementById('sc-picker').style.display!=='none'){
+    document.getElementById('sc-picker').style.display='none';
+    if(screenStack[screenStack.length-1]==='picker') screenStack.pop();
+    return;
+  }
+  if(document.getElementById('sc-search').style.display!=='none'){
+    closeSearch();
+    return;
+  }
+  if(screenStack.length>1) screenStack.pop();
+  var prev=screenStack[screenStack.length-1]||'home';
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  var sc=document.getElementById('sc-'+prev);
+  if(sc) sc.classList.add('active');
+  var bn=document.getElementById('bn-'+prev);
+  document.querySelectorAll('.bn-item').forEach(function(b){b.classList.remove('on');});
+  if(bn) bn.classList.add('on');
+  var pb=document.getElementById('price-bar');
+  if(pb) pb.style.display='none';
+  // Si on revient sur home et qu'il est vide, recharger
+  if(prev==='home'){
+    var cl=document.getElementById('cars-list');
+    if(cl&&cl.children.length===0) loadCars({});
+  }
+}
+
+// ══ SHEETS ══
+function openSheet(id){
+  closeSheet();
+  curSheet=id;
+  document.getElementById('overlay').classList.add('on');
+  document.getElementById(id).classList.add('on');
+  document.body.style.overflow='hidden';
+  if(id==='sh-auth') refreshAuth();
+}
+function closeSheet(){
+  if(curSheet){document.getElementById(curSheet)?.classList.remove('on');curSheet=null;}
+  document.getElementById('overlay').classList.remove('on');
+  document.body.style.overflow='';
+}
+
+// ══ LOAD CARS ══
+async function loadCars(p){
+  var list=document.getElementById('cars-list');
+  list.innerHTML='<div class="state-loading"><div class="spin"><i class="ti ti-loader-2"></i></div><div style="font-size:13px;font-weight:300">Chargement…</div></div>';
+  try{
+    var qp=Object.assign({sort:sortVal,limit:20},p||{});
+    var qs=Object.entries(qp).filter(([k,v])=>v!=null&&v!=='').map(([k,v])=>encodeURIComponent(k)+'='+encodeURIComponent(v)).join('&');
+    var res=await fetch(API+'/api/search?'+qs);
+    var data=await res.json();
+    var cars=data.annonces||[];
+    var total=data.total||cars.length;
+    document.getElementById('rb-count').innerHTML='<b>'+total+'</b> annonces';
+    document.getElementById('ss-count').textContent=total;
+    if(!cars.length){
+      list.innerHTML='<div class="state-empty"><i class="ti ti-car-off"></i><h3>Aucune annonce</h3><p>Élargissez vos critères.</p><button class="retry" onclick="resetSearch();loadCars({})">Réinitialiser</button></div>';
+      return;
+    }
+    list.innerHTML='';
+    cars.forEach((car,i)=>{
+      var el=buildCard(car,i);
+      list.appendChild(el);
+    });
+  }catch(e){
+    list.innerHTML='<div class="state-empty"><i class="ti ti-wifi-off"></i><h3>Erreur de chargement</h3><p>Vérifiez votre connexion.</p><button class="retry" onclick="loadCars(params)">Réessayer</button></div>';
+  }
+}
+
+function buildCard(car,idx){
+  var score=car.torque_score||0;
+  var ps=car.price_score||0;
+  var faved=isFav(car.id);
+  var src=(flag(car.source_country)||'')+' '+(car.source||'');
+  var pTag=ps>=80?'<div class="price-pill good"><i class="ti ti-trending-down" style="font-size:9px"></i>Bon prix</div>':ps>=60?'<div class="price-pill fair"><i class="ti ti-minus" style="font-size:9px"></i>Prix marché</div>':'';
+  var bdgs=[];
+  if(car.has_ct) bdgs.push('<div class="badge bt-g"><i class="ti ti-circle-check"></i>CT valide</div>');
+  if(car.is_first_owner) bdgs.push('<div class="badge bt-b"><i class="ti ti-user"></i>1er proprio</div>');
+  if(car.is_accident_free) bdgs.push('<div class="badge bt-g"><i class="ti ti-shield"></i>Non accidenté</div>');
+  var d=document.createElement('div');
+  d.className='car-card'+(score>=85?' top':'');
+  d.style.animationDelay=(idx*.04)+'s';
+  d.innerHTML=
+    '<div class="cc-img">'+
+      '<img src="'+carImg(car)+'" loading="lazy" onerror="this.src=\''+DEF_IMGS[0]+'\'">'+
+      '<div class="cc-src">'+src.trim()+'</div>'+
+      (score?'<div class="cc-score'+(score>=85?' hi':'')+'">'+score+'</div>':'')+
+      '<div class="cc-fav'+(faved?' on':'')+'"><i class="ti ti-heart'+(faved?'-filled':'')+'"></i></div>'+
+    '</div>'+
+    '<div class="cc-body">'+
+      '<div class="cc-make">'+(car.make||'').toUpperCase()+'</div>'+
+      '<div class="cc-model">'+(car.model||'')+(car.version?' · '+car.version:'')+'</div>'+
+      '<div class="cc-sub">'+(car.year||'')+(car.gearbox?' · '+car.gearbox:'')+'</div>'+
+      '<div class="cc-price-row"><div class="cc-price">'+fmt(car.price)+'</div>'+pTag+'</div>'+
+      '<div class="cc-specs">'+
+        '<div class="cc-spec"><i class="ti ti-road"></i>'+fmtKm(car.km)+'</div>'+
+        '<div class="cc-spec"><i class="ti ti-gas-station"></i>'+fuel(car.fuel_type)+'</div>'+
+        (car.city?'<div class="cc-spec"><i class="ti ti-map-pin"></i>'+car.city+'</div>':'')+
+      '</div>'+
+      (bdgs.length?'<div class="cc-badges">'+bdgs.join('')+'</div>':'')+
+      '<div class="cc-actions">'+
+        '<button class="cc-btn-view"><i class="ti ti-eye"></i>Voir l\'annonce</button>'+
+        '<button class="cc-btn-al"><i class="ti ti-bell"></i></button>'+
+      '</div>'+
+    '</div>'+
+    (score>=80?'<div class="cc-torque"><div class="cc-tav">T</div>Score '+score+'/100 · Recommandé Torque IA</div>':'');
+  d.querySelector('.cc-img').onclick=()=>openAnn(car);
+  d.querySelector('.cc-body').onclick=()=>openAnn(car);
+  d.querySelector('.cc-fav').onclick=(e)=>{e.stopPropagation();toggleFav(car.id,d.querySelector('.cc-fav'));};
+  d.querySelector('.cc-btn-view').onclick=(e)=>{e.stopPropagation();openAnn(car);};
+  d.querySelector('.cc-btn-al').onclick=(e)=>{e.stopPropagation();openSheet('sh-al-new');};
+  return d;
+}
+
+// ══ QUICK FILTERS ══
+function qfTap(el,val){
+  document.querySelectorAll('.chip').forEach(c=>c.classList.remove('on'));
+  el.classList.add('on');
+  var p=Object.assign({},params);
+  if(val==='suv') p.body_type='suv';
+  else if(['diesel','essence','hybride','electrique'].includes(val)) p.fuel_type=val;
+  else if(val==='ct') p.has_ct=true;
+  else if(val==='1er') p.is_first_owner=true;
+  else{delete p.body_type;delete p.fuel_type;delete p.has_ct;delete p.is_first_owner;}
+  loadCars(p);
+}
+function sortBy(v){sortVal=v;loadCars(params);}
+
+// ══ SEARCH ══
+function ssTap(el){document.querySelectorAll('.ss-tab').forEach(function(t){t.classList.remove('on');t.style.color='';t.style.borderBottomColor='';});el.classList.add('on');}
+function toggleFC(el,v){el.classList.toggle('on');if(el.classList.contains('on')){if(!sEnergy.includes(v))sEnergy.push(v);}else{sEnergy=sEnergy.filter(x=>x!==v);}}
+function doSearch(){
+  closeSearch();
+  document.getElementById('sc-search').style.display='none';
+  params={};
+  if(sMake) params.make=sMake;
+  if(sModel) params.model=sModel;
+  if(sYear) params.year_min=sYear;
+  if(sKm) params.km_max=sKm;
+  if(sPrice) params.price_max=sPrice;
+  if(sEnergy.length) params.fuel_type=sEnergy[0];
+  // toggles
+  document.querySelectorAll('#ftog-wrap .fsw').forEach((sw,i)=>{
+    if(sw.classList.contains('on')){
+      if(i===0) params.has_ct=true;
+      if(i===1) params.is_first_owner=true;
+      if(i===2) params.is_accident_free=true;
+    }
+  });
+  var parts=[];
+  if(sMake) parts.push(sMake);
+  if(sModel) parts.push(sModel);
+  if(sPrice) parts.push('max '+fmt(parseInt(sPrice)));
+  var lbl=document.getElementById('search-label');
+  lbl.className='search-pill-text'+(parts.length?' active':'');
+  lbl.textContent=parts.length?parts.join(' · '):'Marque, modèle, mots-clés…';
+  if(Object.keys(params).length) document.getElementById('fdot').style.display='block';
+  loadCars(params);
+}
+function resetSearch(){
+  sMake='';sModel='';sYear='';sKm='';sPrice='';sEnergy=[];params={};
+  ['dv-make','dv-model','dv-year','dv-km','dv-price'].forEach(id=>{
+    var el=document.getElementById(id);
+    el.className='ddf-val ph';
+    el.textContent={['dv-make']:'Toutes marques',['dv-model']:'Tous modèles',['dv-year']:'Toutes',['dv-km']:'Tous',['dv-price']:'Sans limite'}[id]||'–';
+  });
+  document.getElementById('dv-make').textContent='Toutes marques';
+  document.getElementById('dv-model').textContent='Tous modèles';
+  document.getElementById('dv-year').textContent='Toutes';
+  document.getElementById('dv-km').textContent='Tous';
+  document.getElementById('dv-price').textContent='Sans limite';
+  document.querySelectorAll('#energy-chips .fc').forEach(c=>c.classList.remove('on'));
+  document.querySelectorAll('#ftog-wrap .fsw').forEach(s=>s.className='fsw off');
+  document.getElementById('search-label').className='search-pill-text';
+  document.getElementById('search-label').textContent='Marque, modèle, mots-clés…';
+  document.getElementById('fdot').style.display='none';
+}
+function setPriceQ(el,v){document.querySelectorAll('[onclick^="setPriceQ"]').forEach(c=>c.classList.remove('on'));el.classList.add('on');sPrice=v;document.getElementById('dv-price').textContent=fmt(parseInt(v));document.getElementById('dv-price').className='ddf-val';}
+function xclFC(el,g){el.closest('.fchips').querySelectorAll('.fc').forEach(c=>c.classList.remove('on'));el.classList.add('on');}
+
+// ══ PICKER ══
+var MAKES=["ALPINA", "Aiways", "Alfa Romeo", "Alpine", "Aston Martin", "Audi", "BMW", "BYD", "Bentley", "Bugatti", "Buick", "Cadillac", "Caterham", "Chevrolet", "Chrysler", "Citroën", "Cupra", "DS Automobiles", "Dacia", "Daihatsu", "Dodge", "Donkervoort", "Ferrari", "Fiat", "Fisker", "Ford", "GMC", "GWM", "Genesis", "Honda", "Hongqi", "Hyundai", "Ineos", "Infiniti", "Isuzu", "Jaecoo", "Jaguar", "Jeep", "KTM", "Kia", "Koenigsegg", "LEVC", "Lada", "Lamborghini", "Lancia", "Land Rover", "Leapmotor", "Lexus", "Lincoln", "Lotus", "Lucid", "Lynk & Co", "MG", "Mahindra", "Maserati", "Maxus", "Mazda", "McLaren", "Mercedes-Benz", "Mini", "Mitsubishi", "Morgan", "NIO", "Nissan", "OMODA", "ORA", "Opel", "Pagani", "Peugeot", "Polestar", "Porsche", "Renault", "Rimac", "Rolls-Royce", "Saab", "Seat", "Skoda", "Smart", "Ssangyong", "Subaru", "Suzuki", "Tata", "Tesla", "Togg", "Toyota", "VinFast", "Volkswagen", "Volvo", "Voyah", "Wiesmann", "Xpeng", "Zeekr"];
+var MODEL_MAP={"Volkswagen": ["Arteon", "Beetle", "Caddy", "Golf", "ID.3", "ID.4", "ID.5", "ID.7", "Multivan", "Passat", "Phaeton", "Polo", "Sharan", "T-Cross", "T-Roc", "Tiguan", "Touareg", "Touran", "Up"], "Audi": ["A1", "A3", "A4", "A5", "A6", "A7", "A8", "Q2", "Q3", "Q4 e-tron", "Q5", "Q7", "Q8", "R8", "RS3", "RS4", "RS5", "RS6", "RS7", "S3", "S4", "S5", "S6", "S7", "S8", "SQ5", "SQ7", "SQ8", "TT", "e-tron", "e-tron GT"], "Skoda": ["Citigo", "Enyaq", "Fabia", "Kamiq", "Karoq", "Kodiaq", "Octavia", "Rapid", "Roomster", "Scala", "Superb"], "Seat": ["Alhambra", "Altea", "Arona", "Ateca", "Ibiza", "Leon", "Mii", "Tarraco", "Toledo"], "Cupra": ["Ateca", "Born", "Formentor", "Leon", "Raval", "Terramar"], "Porsche": ["718 Boxster", "718 Cayman", "911", "Boxster", "Cayenne", "Cayman", "Macan", "Panamera", "Taycan"], "Peugeot": ["107", "108", "2008", "207", "208", "3008", "307", "308", "407", "408", "5008", "508", "607", "807", "Partner", "RCZ", "Rifter", "Traveller", "e-2008", "e-208", "e-3008", "e-308", "iOn"], "Citroën": ["Berlingo", "C-Elysée", "C1", "C3", "C3 Aircross", "C4", "C4 X", "C5 Aircross", "C5 X", "C6", "DS3", "Jumpy", "Picasso", "SpaceTourer", "ë-Berlingo", "ë-C4", "ë-Jumpy"], "Renault": ["Arkana", "Austral", "Captur", "Clio", "Espace", "Fluence", "Kangoo", "Koleos", "Laguna", "Latitude", "Master", "Megane", "Modus", "R5 E-Tech", "Scenic", "Symbol", "Talisman", "Twingo", "Vel Satis", "Wind", "Zoe"], "Dacia": ["Bigster", "Dokker", "Duster", "Jogger", "Lodgy", "Logan", "Logan MCV", "Sandero", "Sandero Stepway", "Spring"], "Opel": ["Adam", "Agila", "Antara", "Astra", "Cascada", "Combo", "Corsa", "Crossland", "Crossland X", "Frontera", "Grandland", "Grandland X", "Insignia", "Meriva", "Mokka", "Omega", "Signum", "Speedster", "Tigra", "Vectra", "Vivaro", "Zafira", "Zafira-C"], "Alfa Romeo": ["147", "156", "159", "166", "4C", "Brera", "Crosswagon", "GTV", "Giulia", "Giulietta", "Junior", "MiTo", "Spider", "Stelvio", "Tonale"], "Fiat": ["500", "500L", "500X", "500e", "Barchetta", "Bravo", "Coupe", "Croma", "Doblo", "Ducato", "Grande Panda", "Linea", "Multipla", "Panda", "Punto", "Sedici", "Stilo", "Tempra", "Tipo", "Ulysse"], "Lancia": ["Delta", "Musa", "Phedra", "Thesis", "Ypsilon"], "DS Automobiles": ["DS3", "DS3 Crossback", "DS4", "DS5", "DS7", "DS9"], "Jeep": ["Avenger", "Cherokee", "Compass", "Gladiator", "Grand Cherokee", "Renegade", "Wrangler"], "Maserati": ["Ghibli", "GranCabrio", "GranTurismo", "Grecale", "Levante", "Quattroporte"], "Chrysler": ["300C", "Grand Voyager", "PT Cruiser", "Sebring", "Voyager"], "Dodge": ["Caliber", "Challenger", "Charger", "Durango", "Journey", "Viper"], "BMW": ["M2", "M3", "M4", "M5", "M6", "M8", "Série 1", "Série 2", "Série 3", "Série 4", "Série 5", "Série 6", "Série 7", "Série 8", "X1", "X2", "X3", "X3 M", "X4", "X4 M", "X5", "X5 M", "X6", "X6 M", "X7", "Z3", "Z4", "i3", "i4", "i5", "i7", "iX", "iX1", "iX2", "iX3"], "Mini": ["Aceman", "Cabrio", "Clubman", "Cooper", "Cooper S", "Cooper SE", "Countryman", "Coupé", "John Cooper Works", "One", "One D", "Paceman", "Roadster"], "Rolls-Royce": ["Cullinan", "Dawn", "Ghost", "Phantom", "Silver Shadow", "Spectre", "Wraith"], "Mercedes-Benz": ["AMG GT", "CLA", "CLS", "Citan", "Classe A", "Classe B", "Classe C", "Classe E", "Classe G", "Classe S", "Classe V", "EQA", "EQB", "EQC", "EQE", "EQS", "EQV", "GLA", "GLB", "GLC", "GLE", "GLS", "Maybach Classe S", "SL", "SLC", "SLK", "SLS AMG", "Sprinter", "T-Class", "Vito"], "Smart": ["#1", "#3", "Forfour", "Fortwo"], "Toyota": ["Auris", "Avensis", "Aygo", "Aygo X", "C-HR", "Camry", "Corolla", "Corolla Cross", "FJ Cruiser", "GR86", "GT86", "Highlander", "IQ", "Land Cruiser", "Land Cruiser Prado", "Prius", "Proace", "Proace City", "RAV4", "Supra", "Verso", "Yaris", "Yaris Cross", "bZ4X"], "Honda": ["Accord", "CR-V", "Civic", "Element", "FR-V", "HR-V", "Insight", "Jazz", "Legend", "NSX", "Stream", "ZR-V", "e", "e:Ny1"], "Nissan": ["350Z", "370Z", "Ariya", "GT-R", "Juke", "Leaf", "Micra", "Murano", "NV200", "Navara", "Note", "Pathfinder", "Pixo", "Primera", "Pulsar", "Qashqai", "Tiida", "X-Trail"], "Mazda": ["BT-50", "CX-3", "CX-30", "CX-5", "CX-60", "CX-80", "MX-30", "MX-5", "Mazda2", "Mazda3", "Mazda5", "Mazda6", "RX-8"], "Mitsubishi": ["ASX", "Carisma", "Colt", "Eclipse Cross", "Galant", "Grandis", "L200", "Lancer", "Outlander", "Pajero", "Pajero Sport", "Sigma", "Space Star", "Space Wagon", "i-MiEV"], "Subaru": ["BRZ", "Forester", "Impreza", "Legacy", "Levorg", "Outback", "Solterra", "Tribeca", "WRX STI", "XV"], "Suzuki": ["Across", "Alto", "Baleno", "Celerio", "Grand Vitara", "Ignis", "Jimny", "Kizashi", "Liana", "S-Cross", "SX4", "Splash", "Swace", "Swift", "Vitara", "Wagon R+"], "Lexus": ["CT", "ES", "GX", "HS", "IS", "LBX", "LC", "LS", "LX", "NX", "RC", "RX", "RZ", "UX"], "Infiniti": ["EX", "FX", "G", "M", "Q30", "Q50", "Q60", "QX30", "QX50", "QX60", "QX80"], "Daihatsu": ["Cuore", "Gran Move", "Materia", "Sirion", "Terios", "YRV"], "Hyundai": ["Accent", "Bayon", "Elantra", "H1", "H350", "IONIQ", "IONIQ 5", "IONIQ 6", "IONIQ 9", "Kona", "Nexo", "Santa Fe", "Sonata", "Staria", "Terracan", "Trajet", "Tucson", "Veloster", "i10", "i20", "i30", "i40", "ix20", "ix35"], "Kia": ["Carens", "Carnival", "Ceed", "EV6", "EV9", "Magentis", "Niro", "Picanto", "Pro Ceed", "Proceed", "Rio", "Sorento", "Soul", "Sportage", "Stinger", "Stonic", "Telluride", "Venga", "Xceed"], "Genesis": ["G70", "G80", "G90", "GV60", "GV70", "GV80"], "Ssangyong": ["Actyon", "Korando", "Musso", "Rexton", "Rodius", "Tivoli"], "Ford": ["B-Max", "C-Max", "Cougar", "EcoSport", "Edge", "Explorer", "F-150 Lightning", "Fiesta", "Focus", "Fusion", "Galaxy", "Ka", "Ka+", "Kuga", "Maverick", "Mondeo", "Mustang", "Mustang Mach-E", "Probe", "Puma", "Ranger", "S-Max", "Street Ka", "Transit", "Transit Connect"], "Tesla": ["Cybertruck", "Model 3", "Model S", "Model X", "Model Y"], "Chevrolet": ["Aveo", "Camaro", "Captiva", "Corvette", "Cruze", "Epica", "Lacetti", "Nubira", "Orlando", "Rezzo", "Silverado", "Spark", "Tahoe", "Trax"], "Cadillac": ["ATS", "CT4", "CT5", "CTS", "Escalade", "SRX", "XT4", "XT5", "XT6"], "Buick": ["Enclave", "Encore", "LaCrosse", "Verano"], "Lincoln": ["Aviator", "Corsair", "MKZ", "Nautilus", "Navigator"], "GMC": ["Acadia", "Canyon", "Sierra", "Terrain", "Yukon"], "Volvo": ["C30", "C40", "C70", "EC40", "EX30", "EX40", "EX90", "S40", "S60", "S80", "S90", "V40", "V60", "V90", "XC40", "XC60", "XC90"], "Land Rover": ["Defender", "Discovery", "Discovery Sport", "Freelander", "Range Rover", "Range Rover Evoque", "Range Rover Sport", "Range Rover Velar", "Series I", "Series II", "Series III"], "Jaguar": ["E-Pace", "E-Type", "F-Pace", "F-Type", "I-Pace", "S-Type", "X-Type", "XE", "XF", "XJ"], "Bentley": ["Bentayga", "Continental GT", "Continental GTC", "Flying Spur", "Mulsanne"], "Aston Martin": ["DB11", "DB7", "DB9", "DBS", "DBX", "Rapide", "Vanquish", "Vantage"], "Ferrari": ["296 GTB", "296 GTS", "360", "430", "458", "488 GTB", "488 Spider", "812 GTS", "812 Superfast", "California", "F430", "F8 Spider", "F8 Tributo", "GTC4Lusso", "LaFerrari", "Portofino", "Portofino M", "Purosangue", "Roma", "SF90"], "Lamborghini": ["Aventador", "Diablo", "Gallardo", "Huracan", "Murcielago", "Revuelto", "Urus"], "McLaren": ["540C", "570S", "600LT", "720S", "765LT", "Artura", "GT"], "Lotus": ["Elise", "Emira", "Evija", "Evora", "Exige"], "Morgan": ["3 Wheeler", "Plus Four", "Plus Six", "Roadster"], "Bugatti": ["Chiron", "Divo", "Veyron"], "Koenigsegg": ["Agera", "CC850", "Jesko", "Regera"], "Alpine": ["A110"], "Caterham": ["Seven"], "ALPINA": ["B3", "B4", "B5", "B7", "B8", "D3", "D4", "D5", "XB7"], "Pagani": ["Huayra", "Zonda"], "Saab": ["9-3", "9-5", "900", "9000"], "Lada": ["Granta", "Largus", "Niva", "Priora", "Samara", "Vesta", "XRAY"], "BYD": ["Atto 3", "Dolphin", "Han", "Seagull", "Seal", "Sealion 6", "Sealion 7", "Song Plus", "Tang"], "MG": ["Cyberster", "MG HS", "MG One", "MG ZS", "MG3", "MG4", "MG5", "TF", "ZR", "ZT"], "Polestar": ["Polestar 1", "Polestar 2", "Polestar 3", "Polestar 4"], "NIO": ["EL6", "EP9", "ES6", "ES8", "ET5", "ET7"], "Xpeng": ["G3", "G6", "G9", "P5", "P7", "X9"], "Lynk & Co": ["01", "02", "03", "05"], "Aiways": ["U5", "U6"], "ORA": ["03", "Funky Cat"], "Maxus": ["Deliver 9", "EV80", "Mifa 7", "Mifa 9"], "OMODA": ["5", "7", "C5"], "Jaecoo": ["J7", "J8"], "Voyah": ["Dream", "Free"], "Leapmotor": ["C10", "T03"], "Hongqi": ["E-HS9", "H5", "H9"], "Togg": ["T10X"], "VinFast": ["VF6", "VF7", "VF8", "VF9"], "Zeekr": ["001", "009", "X"], "GWM": ["Haval H6", "Ora", "Wey"], "Isuzu": ["D-Max", "MU-X"], "Tata": ["Altroz", "Harrier", "Nexon", "Punch"], "Mahindra": ["Scorpio", "Thar", "XUV300", "XUV700"], "KTM": ["X-Bow"], "Donkervoort": ["D8 GTO", "F22"], "Wiesmann": ["GT", "Project Thunderball", "Roadster"], "Rimac": ["Concept One", "Nevera"], "Lucid": ["Air", "Gravity"], "Fisker": ["Karma", "Ocean"], "Ineos": ["Grenadier"], "LEVC": ["TX", "VN5"]};
+var YEARS=['2024','2023','2022','2021','2020','2019','2018','2017','2016','2015','2013','2010','2008'];
+var KMS_OPT=['10 000 km','20 000 km','30 000 km','50 000 km','75 000 km','100 000 km','125 000 km','150 000 km','200 000 km'];
+var PRICE_OPT=['3 000 €','5 000 €','7 000 €','10 000 €','12 000 €','15 000 €','20 000 €','25 000 €','30 000 €','40 000 €','50 000 €'];
+
+var PK={
+  make:{title:'Marque',items:()=>['Toutes marques',...MAKES.slice().sort()],search:true,target:'dv-make',def:'Toutes marques',cb:v=>{sMake=v==='Toutes marques'?'':v;sModel='';document.getElementById('dv-model').textContent='Tous modèles';document.getElementById('dv-model').className='ddf-val ph';}},
+  model:{title:'Modèle',items:()=>['Tous modèles',...(MODEL_MAP[sMake]||['Golf','Clio','Yaris','208','Série 3','Classe A','RAV4'])],search:false,target:'dv-model',def:'Tous modèles',cb:v=>{sModel=v==='Tous modèles'?'':v;}},
+  year:{title:'Année minimum',items:()=>['Toutes',...YEARS],search:false,target:'dv-year',def:'Toutes',cb:v=>{sYear=v==='Toutes'?'':v;}},
+  km:{title:'Kilométrage max',items:()=>['Tous',...KMS_OPT],search:false,target:'dv-km',def:'Tous',cb:v=>{sKm=v==='Tous'?'':v.replace(/[^0-9]/g,'');}},
+  price:{title:'Budget maximum',items:()=>['Sans limite',...PRICE_OPT],search:false,target:'dv-price',def:'Sans limite',cb:v=>{sPrice=v==='Sans limite'?'':v.replace(/[^0-9]/g,'');}}
+};
+function openPicker(key){
+  curPicker=key;
+  var cfg=PK[key];
+  var titleEl=document.getElementById('pk-title');
+  if(titleEl) titleEl.textContent=cfg.title;
+  var sw=document.getElementById('pk-search-wrap');
+  if(sw) sw.style.display=cfg.search?'block':'none';
+  if(cfg.search){ var inp=document.getElementById('pk-search'); if(inp){ inp.value=''; } }
+  pkRender(cfg.items());
+  // Cacher sc-search et montrer sc-picker
+  var ss=document.getElementById('sc-search');
+  if(ss) ss.style.display='none';
+  var sp=document.getElementById('sc-picker');
+  if(sp) sp.style.display='flex';
+  if(screenStack[screenStack.length-1]!=='picker') screenStack.push('picker');
+}
+function pkRender(items){
+  var list=document.getElementById('pk-list');
+  list.innerHTML='';
+  var cfg=PK[curPicker];
+  var cur=document.getElementById(cfg.target).textContent;
+  items.forEach(item=>{
+    var d=document.createElement('div');
+    d.className='pk-item'+(item===cur?' on':'');
+    d.innerHTML=item+'<div class="pk-chk">'+(item===cur?'✓':'')+'</div>';
+    d.onclick=()=>{
+      cfg.cb(item);
+      var el=document.getElementById(cfg.target);
+      el.textContent=item;
+      el.className='ddf-val'+(item===cfg.def?' ph':'');
+      closePicker();
+    };
+    list.appendChild(d);
+  });
+}
+function pkFilter(q){
+  if(!curPicker) return;
+  var cfg=PK[curPicker];
+  var items=cfg.items();
+  pkRender(q?items.filter(function(i){return i.toLowerCase().includes(q.toLowerCase());}):items);
+}
+function closePicker(){
+  document.getElementById('sc-picker').style.display='none';
+  if(screenStack[screenStack.length-1]==='picker') screenStack.pop();
+  // Remettre sc-search visible
+  var ss = document.getElementById('sc-search');
+  if(ss) ss.style.display='flex';
+}
+
+// ══ FAV ══
+function toggleFav(id,btn){
+  var favs=getFavs();
+  var i=favs.indexOf(id);
+  if(i>-1){favs.splice(i,1);btn.classList.remove('on');btn.innerHTML='<i class="ti ti-heart"></i>';showToast('💔 Retiré des favoris');}
+  else{favs.push(id);btn.classList.add('on');btn.innerHTML='<i class="ti ti-heart-filled"></i>';showToast('❤️ Ajouté aux favoris');}
+  saveFavs(favs);updateBadges();
+}
+function toggleAnnFav(){
+  if(!curAnn) return;
+  var favs=getFavs();
+  var pb=document.getElementById('pb-fav');
+  var i=favs.indexOf(curAnn.id);
+  if(i>-1){favs.splice(i,1);pb.className='pb-fav';pb.innerHTML='<i class="ti ti-heart"></i>';showToast('💔 Retiré');}
+  else{favs.push(curAnn.id);pb.className='pb-fav on';pb.innerHTML='<i class="ti ti-heart-filled"></i>';showToast('❤️ Ajouté');}
+  saveFavs(favs);updateBadges();
+}
+function updateBadges(){
+  var f=getFavs().length;
+  var bf=document.getElementById('badge-fav');
+  bf.textContent=f;bf.style.display=f?'flex':'none';
+}
+
+// ══ ANNONCE ══
+function openAnn(car){
+  curAnn=car;galIdx=0;
+  galImgs=(car.photos&&car.photos.length)?car.photos:[carImg(car)];
+  // Fermer les overlays search/picker avant d'ouvrir l'annonce
+  document.getElementById('sc-search').style.display='none';
+  document.getElementById('sc-picker').style.display='none';
+  // Nettoyer le stack des overlays
+  screenStack=screenStack.filter(function(s){return s!=='search'&&s!=='picker';});
+  // S'assurer que 'home' est dans le stack comme base
+  if(screenStack.indexOf('home')<0) screenStack.unshift('home');
+  screenStack.push('ann');
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById('sc-ann').classList.add('active');
+  document.getElementById('ann-scroll').scrollTop=0;
+  buildAnn(car);
+}
+
+function buildAnn(car){
+  var score=car.torque_score||0;
+  var faved=isFav(car.id);
+  var src=(flag(car.source_country)||'')+' '+(car.source||'');
+  var pb=document.getElementById('pb-fav');
+  pb.className='pb-fav'+(faved?' on':'');
+  pb.innerHTML='<i class="ti ti-heart'+(faved?'-filled':'')+'"></i>';
+  document.getElementById('pb-val').textContent=fmt(car.price);
+  document.getElementById('price-bar').style.display='flex';
+  var bdgs=[];
+  if(car.has_ct) bdgs.push('<div class="badge bt-g"><i class="ti ti-circle-check"></i>CT valide</div>');
+  if(car.is_first_owner) bdgs.push('<div class="badge bt-b"><i class="ti ti-user"></i>1er proprio</div>');
+  if(car.is_accident_free) bdgs.push('<div class="badge bt-g"><i class="ti ti-shield"></i>Non accidenté</div>');
+  if(car.has_service_book) bdgs.push('<div class="badge bt-a"><i class="ti ti-notebook"></i>Carnet</div>');
+  var thumbsH=galImgs.length>1?'<div class="gal-thumbs">'+galImgs.map((img,i)=>'<div class="gal-thumb'+(i===0?' on':'')+'" onclick="galTo('+i+')"><img src="'+img+'"></div>').join('')+'</div>':'';
+  var dotsH=galImgs.map((_,i)=>'<div class="gal-dot'+(i===0?' on':'')+'"></div>').join('');
+  var navH=galImgs.length>1?'<button class="gal-nav prev" onclick="galGo(-1)"><i class="ti ti-chevron-left"></i></button><button class="gal-nav next" onclick="galGo(1)"><i class="ti ti-chevron-right"></i></button>':'';
+  document.getElementById('ann-scroll').innerHTML=
+    '<div class="gal" id="gal">'+
+      '<img id="gal-img" src="'+galImgs[0]+'" onerror="this.src=\''+DEF_IMGS[0]+'\'">'+
+      navH+
+      '<div class="gal-dots" id="gal-dots">'+dotsH+'</div>'+
+      '<div class="gal-ct"><i class="ti ti-photo" style="font-size:10px;margin-right:3px"></i><span id="gal-n">1</span>/'+galImgs.length+'</div>'+
+      '<div class="cc-src">'+src.trim()+'</div>'+
+      (score?'<div class="cc-score'+(score>=85?' hi':'')+'" style="top:auto;bottom:10px;right:10px"><i class="ti ti-cpu" style="font-size:9px"></i>'+score+'/100</div>':'')+
+    '</div>'+
+    thumbsH+
+    '<div class="ann-block">'+
+      '<div class="ann-make">'+(car.make||'').toUpperCase()+'</div>'+
+      '<div class="ann-model">'+(car.model||'')+(car.version?' '+car.version:'')+'</div>'+
+      '<div class="ann-sub">'+(car.year||'')+(car.gearbox?' · '+car.gearbox:'')+' · '+fuel(car.fuel_type)+'</div>'+
+      (score>0?'<div class="score-box">'+
+        '<div class="score-n">'+score+'</div>'+
+        '<div style="width:1px;height:46px;background:rgba(229,37,53,.15);flex-shrink:0"></div>'+
+        '<div class="score-bars">'+
+          '<div class="sbar"><span style="min-width:65px">Critères</span><div class="sbar-track"><div class="sbar-fill" style="width:'+Math.min(100,score*.9)+'%;background:#16a34a"></div></div></div>'+
+          '<div class="sbar"><span style="min-width:65px">Prix</span><div class="sbar-track"><div class="sbar-fill" style="width:'+(car.price_score||60)+'%;background:#1d4ed8"></div></div></div>'+
+          '<div class="sbar"><span style="min-width:65px">Historique</span><div class="sbar-track"><div class="sbar-fill" style="width:'+((car.has_ct?25:0)+(car.is_accident_free?35:0)+(car.is_first_owner?20:0)+(car.has_service_book?20:0))+'%;background:#d97706"></div></div></div>'+
+        '</div>'+
+      '</div>':'')+
+      '<div class="ann-grid">'+
+        '<div class="ann-spec"><i class="ti ti-calendar"></i><div class="ann-spec-v">'+(car.year||'–')+'</div><div class="ann-spec-l">Année</div></div>'+
+        '<div class="ann-spec"><i class="ti ti-road"></i><div class="ann-spec-v">'+fmtKm(car.km)+'</div><div class="ann-spec-l">Km</div></div>'+
+        '<div class="ann-spec"><i class="ti ti-gas-station"></i><div class="ann-spec-v">'+fuel(car.fuel_type)+'</div><div class="ann-spec-l">Énergie</div></div>'+
+        '<div class="ann-spec"><i class="ti ti-settings"></i><div class="ann-spec-v">'+(car.gearbox||'–')+'</div><div class="ann-spec-l">Boîte</div></div>'+
+      '</div>'+
+      (bdgs.length?'<div class="cc-badges">'+bdgs.join('')+'</div>':'')+
+    '</div>'+
+    '<div class="ann-block">'+
+      '<div class="ann-sec-title"><i class="ti ti-list"></i>Caractéristiques</div>'+
+      '<table class="spec-table">'+
+        (car.make?'<tr><td>Marque</td><td>'+car.make+'</td></tr>':'')+
+        (car.model?'<tr><td>Modèle</td><td>'+car.model+'</td></tr>':'')+
+        (car.version?'<tr><td>Version</td><td>'+car.version+'</td></tr>':'')+
+        '<tr><td>Année</td><td>'+(car.year||'–')+'</td></tr>'+
+        '<tr><td>Kilométrage</td><td>'+fmtKm(car.km)+'</td></tr>'+
+        '<tr><td>Énergie</td><td>'+fuel(car.fuel_type)+'</td></tr>'+
+        '<tr><td>Boîte de vitesses</td><td>'+(car.gearbox||'–')+'</td></tr>'+
+        (car.power_hp?'<tr><td>Puissance</td><td>'+car.power_hp+' ch</td></tr>':'')+
+        (car.color?'<tr><td>Couleur</td><td>'+car.color+'</td></tr>':'')+
+        '<tr><td>Localisation</td><td>'+(car.city||'–')+' '+(flag(car.source_country)||'')+'</td></tr>'+
+        '<tr><td>Source</td><td>'+(car.source||'–')+'</td></tr>'+
+      '</table>'+
+    '</div>'+
+    '<div class="ann-block">'+
+      '<div class="ann-sec-title"><i class="ti ti-phone"></i>Contact & source</div>'+
+      '<div style="display:flex;flex-direction:column;gap:8px">'+
+        '<button onclick="goSrc()" style="width:100%;background:var(--red);color:#fff;border:none;border-radius:var(--r);padding:13px;font-size:14px;font-weight:700;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer"><i class="ti ti-external-link"></i>Voir l\'annonce sur '+(curAnn&&curAnn.source?curAnn.source:'la source')+'</button>'+
+        '<button onclick="showToast(\'📞 Redirection vers le vendeur…\')" style="width:100%;background:#fff;color:var(--ink);border:1.5px solid var(--border);border-radius:var(--r);padding:13px;font-size:14px;font-weight:600;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer"><i class="ti ti-phone"></i>Contacter le vendeur</button>'+
+        '<button id="ann-fav-btn2" onclick="toggleAnnFav()" style="width:100%;background:#fff;color:var(--gray);border:1.5px solid var(--border);border-radius:var(--r);padding:12px;font-size:14px;font-weight:500;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer"><i class="ti ti-heart"></i>Ajouter aux favoris</button>'+
+        (curAnn&&curAnn.source?'<div style="font-size:11px;color:var(--gray2);font-weight:300;text-align:center;padding:4px 0"><i class="ti ti-info-circle" style="font-size:11px"></i> Source : '+curAnn.source+(curAnn.city?' · '+curAnn.city:'')+(curAnn.source_country?' '+flag(curAnn.source_country):'')+'</div>':'')+
+      '</div>'+
+    '</div>'+
+    '<div class="tc">'+
+      '<div class="tc-hdr">'+
+        '<div class="tc-av">T</div>'+
+        '<div><div class="tc-name">Torque <span style="font-size:9px;background:rgba(229,37,53,.2);color:#ff6b77;padding:1px 7px;border-radius:10px;font-weight:700">IA</span></div>'+
+        '<div class="tc-status"><div class="tc-dot"></div>Analyse en cours…</div></div>'+
+      '</div>'+
+      '<div class="tc-msgs" id="tc-msgs">'+
+        '<div class="tc-msg"><div class="tc-av" style="width:22px;height:22px;font-size:9px;flex-shrink:0">T</div><div class="tc-bbl">J\'ai analysé ce <b>'+(car.make||'véhicule')+'</b> — score <b>'+(score||'–')+'/100</b>. Que souhaitez-vous savoir ?</div></div>'+
+      '</div>'+
+      '<div class="tc-qr">'+
+        '<button class="tc-qbtn" onclick="tcSend(\'Inspection avant achat ?\')">🔍 Inspection</button>'+
+        '<button class="tc-qbtn" onclick="tcSend(\'Frais d\'import ?\')">🚛 Import</button>'+
+        '<button class="tc-qbtn" onclick="tcSend(\'Prix négociable ?\')">💬 Négo</button>'+
+        '<button class="tc-qbtn" onclick="tcSend(\'TCO 3 ans ?\')">💶 TCO</button>'+
+      '</div>'+
+      '<div class="tc-row">'+
+        '<input class="tc-inp" id="tc-inp" placeholder="Question sur cette annonce…">'+
+        '<button class="tc-send" onclick="tcSendInp()"><i class="ti ti-send"></i></button>'+
+      '</div>'+
+    '</div>'+
+    '<div class="ann-block">'+
+      '<div class="ann-sec-title"><i class="ti ti-cars"></i>Annonces similaires</div>'+
+      '<div class="sim-row">'+DEF_IMGS.map((img,i)=>'<div class="sim-card"><div class="sim-img"><img src="'+img+'" loading="lazy"></div><div class="sim-body"><div class="sim-make">'+(['VW','Toyota','Renault','BMW','Peugeot'][i]).toUpperCase()+'</div><div class="sim-model">'+(['Golf TDI','Yaris Hybrid','Clio V','Série 1','208'][i])+'</div><div class="sim-price">'+fmt([8900,13900,9800,12500,10200][i])+'</div></div></div>').join('')+'</div>'+
+    '</div>'+
+    '<div style="height:10px;background:#f1f5f9"></div>';
+
+  // Gallery swipe
+  // Mettre à jour le bouton favoris dans le bloc contact
+  setTimeout(function(){
+    var favBtn2=document.getElementById('ann-fav-btn2');
+    if(favBtn2 && curAnn){
+      var faved=isFav(curAnn.id);
+      favBtn2.innerHTML='<i class="ti ti-heart'+(faved?'-filled':'')+'"></i>'+(faved?'Retirer des favoris':'Ajouter aux favoris');
+      favBtn2.style.color=faved?'var(--red)':'var(--gray)';
+    }
+  },100);
+  var gal=document.getElementById('gal');
+  if(gal){
+    var tx=0;
+    gal.addEventListener('touchstart',e=>{tx=e.touches[0].clientX;},{passive:true});
+    gal.addEventListener('touchend',e=>{var dx=e.changedTouches[0].clientX-tx;if(Math.abs(dx)>40)galGo(dx<0?1:-1);},{passive:true});
+  }
+  // Chat enter
+  var inp=document.getElementById('tc-inp');
+  if(inp) inp.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();tcSendInp();}});
+}
+
+function galTo(n){
+  galIdx=Math.max(0,Math.min(galImgs.length-1,n));
+  var img=document.getElementById('gal-img');
+  if(img){img.style.opacity='0';setTimeout(()=>{img.src=galImgs[galIdx];img.style.transition='opacity .18s';img.style.opacity='1';},80);}
+  document.querySelectorAll('.gal-dot').forEach((d,i)=>d.classList.toggle('on',i===galIdx));
+  document.querySelectorAll('.gal-thumb').forEach((t,i)=>t.classList.toggle('on',i===galIdx));
+  var gn=document.getElementById('gal-n');if(gn)gn.textContent=galIdx+1;
+}
+function galGo(dir){galTo(galIdx+dir);}
+function goSrc(){if(curAnn?.source_url)window.open(curAnn.source_url,'_blank');else showToast('🔗 Lien non disponible');}
+function shareAnn(){var url=location.href+(curAnn?'?id='+curAnn.id:'');if(navigator.share)navigator.share({title:'AutoEurope',url});else navigator.clipboard?.writeText(url).then(()=>showToast('🔗 Lien copié !'));}
+
+// Torque chat
+var tcBusy=false;
+var tcR={
+  'Inspection avant achat ?':'Inspection conseillée : vérifiez la distribution (si >80k km), état de la batterie (hybride/électrique), corrosion sous-caisse, et tests de freinage. Réseau spécialisé ou Dekra recommandés.',
+  'Frais d\'import ?':'Import depuis la France : aucun frais douanier EU. Comptez homologation et carte grise (selon région). Hors EU : TVA 20% + droits de douane.',
+  'Prix négociable ?':'Le prix de ce véhicule est dans la fourchette marché. Marge de négociation estimée : 3 à 7%. Argument clé : kilométrage, historique CT, état intérieur.',
+  'TCO 3 ans ?':'Estimation TCO 3 ans : achat + assurance ~1 800€/an + entretien ~600€/an + carburant ~1 200€/an. Soit environ '+fmt((curAnn?.price||10000)+10800)+' total sur 3 ans.'
+};
+function tcSend(txt){
+  if(tcBusy||!txt.trim())return;
+  var msgs=document.getElementById('tc-msgs');if(!msgs)return;
+  var u=document.createElement('div');u.className='tc-msg u';u.innerHTML='<div class="tc-bbl">'+txt+'</div>';
+  msgs.appendChild(u);msgs.scrollTop=msgs.scrollHeight;tcBusy=true;
+  setTimeout(()=>{
+    var r=tcR[txt]||'Analyse Torque IA — pour ce modèle, la fiabilité est bonne selon les données TÜV et CarVertical. Posez une question précise pour une analyse détaillée.';
+    var b=document.createElement('div');b.className='tc-msg';
+    b.innerHTML='<div class="tc-av" style="width:22px;height:22px;font-size:9px;flex-shrink:0">T</div><div class="tc-bbl">'+r+'</div>';
+    msgs.appendChild(b);msgs.scrollTop=msgs.scrollHeight;tcBusy=false;
+  },700);
+}
+function tcSendInp(){var inp=document.getElementById('tc-inp');if(!inp)return;var v=inp.value.trim();inp.value='';tcSend(v||'Analyse générale');}
+
+// ══ FAVORIS ══
+async function loadFavoris(){
+  var list=document.getElementById('fav-list');
+  // ── Si pas connecté : afficher les favoris localStorage ──
+  if(!authToken){
+    var localFavIds=getFavs();
+    if(!localFavIds.length){
+      list.innerHTML='<div class="state-empty"><i class="ti ti-heart"></i><h3>Pas encore de favoris</h3><p>Ajoutez des annonces à vos favoris en cliquant sur ❤️</p><button class="retry" onclick="goScreen(\'home\',document.getElementById(\'bn-home\'))">Voir les annonces</button></div>';
+      return;
+    }
+    // Afficher les cards localStorage (données limitées)
+    list.innerHTML='<div style="background:#fffbeb;border:1px solid #fbbf24;border-radius:var(--rl);padding:10px 13px;margin-bottom:10px;font-size:12px;color:#92400e;display:flex;align-items:center;gap:8px"><i class="ti ti-info-circle" style="font-size:16px;flex-shrink:0"></i>Connectez-vous pour synchroniser vos favoris sur tous vos appareils.</div>';
+    document.getElementById('fav-n').textContent=localFavIds.length;
+    document.getElementById('fav-sub').textContent=localFavIds.length+' favori'+(localFavIds.length>1?'s':'')+' sauvegardé'+(localFavIds.length>1?'s':'');
+    // Charger les annonces depuis l'API sans auth
+    try{
+      var qs=localFavIds.map(function(id){return 'id='+id;}).join('&');
+      var res=await fetch(API+'/api/search?limit=20');
+      var data=await res.json();
+      var allCars=data.annonces||[];
+      var cars=allCars.filter(function(car){return localFavIds.includes(car.id);});
+      if(!cars.length){
+        // Afficher cards sans détails
+        localFavIds.forEach(function(id){
+          var d2=document.createElement('div');
+          d2.className='fav-card';
+          d2.innerHTML='<div class="cc-body"><div class="cc-make">ID: '+id.slice(0,8)+'…</div><div class="cc-model">Données non disponibles</div><div class="cc-actions"><button class="cc-btn-al fav-del-btn" style="background:#fef2f2;color:#dc2626;flex:1"><i class="ti ti-heart-broken"></i>Retirer</button></div></div>';
+          d2.querySelector('.fav-del-btn').onclick=function(){var favs=getFavs();saveFavs(favs.filter(function(f){return f!==id;}));updateBadges();loadFavoris();showToast('💔 Retiré');};
+          list.appendChild(d2);
+        });
+        return;
+      }
+      cars.forEach(function(car){
+        var el=buildFavCard(car);
+        list.appendChild(el);
+      });
+    }catch(e){
+      list.innerHTML+='<div class="state-empty"><i class="ti ti-wifi-off"></i><h3>Erreur de chargement</h3></div>';
+    }
+    return;
+  }
+  // ── Connecté : API ──
+  list.innerHTML='<div class="state-loading"><div class="spin"><i class="ti ti-loader-2"></i></div></div>';
+  try{
+    var res=await fetch(API+'/api/favoris',{headers:{'Authorization':'Bearer '+authToken}});
+    var data=await res.json();
+    var favs=data.favoris||[];
+    document.getElementById('fav-n').textContent=favs.length;
+    document.getElementById('fav-sub').textContent=favs.length+' favori'+(favs.length>1?'s':'')+' sauvegardé'+(favs.length>1?'s':'');
+    var pays=new Set(favs.map(function(f){return f.annonces&&f.annonces.source_country;}).filter(Boolean));
+    document.getElementById('fav-pays').textContent=pays.size||'–';
+    if(!favs.length){list.innerHTML='<div class="state-empty"><i class="ti ti-heart"></i><h3>Pas encore de favoris</h3><p>Explorez les annonces et ajoutez vos coups de cœur.</p></div>';return;}
+    list.innerHTML='';
+    favs.forEach(function(f){
+      var car=f.annonces||{};
+      var el=buildFavCard(car, f.annonce_id||car.id);
+      list.appendChild(el);
+    });
+  }catch(e){list.innerHTML='<div class="state-empty"><i class="ti ti-wifi-off"></i><h3>Erreur</h3><p>Impossible de charger les favoris.</p></div>';}
+}
+
+function buildFavCard(car, favId){
+  var src=(flag(car.source_country)||'')+' '+(car.source||'');
+  var d2=document.createElement('div');d2.className='fav-card';
+  d2.innerHTML=
+    '<div class="fav-img"><img src="'+carImg(car)+'" loading="lazy" onerror="this.src=\''+DEF_IMGS[0]+'\'">'+
+      '<div class="cc-src">'+src.trim()+'</div>'+
+      (car.torque_score?'<div class="cc-score'+(car.torque_score>=85?' hi':'')+'">'+car.torque_score+'</div>':'')+
+    '</div>'+
+    '<div class="cc-body">'+
+      '<div class="cc-make">'+(car.make||'').toUpperCase()+'</div>'+
+      '<div class="cc-model">'+(car.model||'')+'</div>'+
+      '<div class="cc-price-row"><div class="cc-price">'+fmt(car.price)+'</div></div>'+
+      '<div class="cc-specs"><div class="cc-spec"><i class="ti ti-road"></i>'+fmtKm(car.km)+'</div><div class="cc-spec"><i class="ti ti-gas-station"></i>'+fuel(car.fuel_type)+'</div></div>'+
+      '<div class="cc-actions">'+
+        '<button class="cc-btn-view fav-view-btn"><i class="ti ti-eye"></i>Voir l\'annonce</button>'+
+        '<button class="cc-btn-al fav-del-btn" style="background:#fef2f2;color:#dc2626"><i class="ti ti-heart-broken"></i></button>'+
+      '</div>'+
+    '</div>';
+  var id=favId||car.id;
+  d2.querySelector('.fav-view-btn').onclick=function(){openAnn(car);};
+  d2.querySelector('.fav-del-btn').onclick=function(){
+    if(!confirm('Retirer des favoris ?')) return;
+    if(authToken){
+      fetch(API+'/api/favoris/'+id,{method:'DELETE',headers:{'Authorization':'Bearer '+authToken}})
+        .then(function(){var favs=getFavs();saveFavs(favs.filter(function(f){return f!==id;}));updateBadges();loadFavoris();showToast('💔 Retiré');})
+        .catch(function(){showToast('❌ Erreur');});
+    } else {
+      var favs=getFavs();saveFavs(favs.filter(function(f){return f!==id;}));updateBadges();loadFavoris();showToast('💔 Retiré');
+    }
+  };
+  return d2;
+}
+async function loadAlertes(){
+  var list=document.getElementById('al-list');
+  if(!authToken){
+    list.innerHTML='<div class="state-empty"><i class="ti ti-bell-off"></i><h3>Non connecté</h3><p>Connectez-vous pour créer des alertes prix.</p><button class="retry" onclick="openSheet(\'sh-auth\')">Se connecter</button></div>';
+    return;
+  }
+  list.innerHTML='<div class="state-loading"><div class="spin"><i class="ti ti-loader-2"></i></div></div>';
+  try{
+    var res=await fetch(API+'/api/alertes',{headers:{'Authorization':'Bearer '+authToken}});
+    var data=await res.json();
+    var als=data.alertes||[];
+    var hit=als.filter(a=>a.triggered).length;
+    document.getElementById('al-n').textContent=als.length;
+    document.getElementById('al-hit').textContent=hit;
+    document.getElementById('al-act').textContent=als.filter(a=>a.active!==false).length;
+    document.getElementById('al-sub').textContent=als.length+' alerte'+(als.length!==1?'s':'');
+    if(!als.length){list.innerHTML='<div class="state-empty"><i class="ti ti-bell"></i><h3>Pas encore d\'alertes</h3><p>Créez une alerte pour être notifié quand le prix baisse.</p><button class="retry" onclick="openSheet(\'sh-al-new\')">Créer une alerte</button></div>';return;}
+    list.innerHTML='';
+    als.forEach(a=>{
+      var car=a.annonces||{};
+      var prog=a.start_price&&a.target_price?Math.min(100,((a.start_price-(a.current_price||a.start_price))/(a.start_price-a.target_price)*100)):0;
+      var d=document.createElement('div');d.className='al-card'+(a.triggered?' triggered':'');
+      d.innerHTML=
+        (a.triggered?'<div class="al-hit"><div style="font-size:18px">🔔</div><div style="flex:1"><div style="font-size:12px;font-weight:700;color:#fff">Prix objectif atteint !</div></div><button style="background:#fff;color:#d97706;font-size:11px;font-weight:700;padding:4px 10px;border-radius:20px;border:none">Voir</button></div>':'')+
+        '<div class="al-top">'+
+          '<div class="al-thumb"><img src="'+carImg(car)+'" loading="lazy" onerror="this.src=\''+DEF_IMGS[0]+'\'"></div>'+
+          '<div class="al-info"><div class="al-title">'+(a.title||car.make+' '+car.model||'Alerte')+'</div><div class="al-sub">'+(car.year||'')+(car.km?' · '+fmtKm(car.km):'')+'</div></div>'+
+          '<button class="al-sw '+(a.active!==false?'on':'off')+'" onclick="this.className=\'al-sw \'+(this.classList.contains(\'on\')?\'off\':\'on\')"></button>'+
+        '</div>'+
+        '<div class="al-prices">'+
+          '<div style="flex:1;text-align:center"><div class="alp-lbl">Prix actuel</div><div class="alp-val'+(a.triggered?' hit':'')+'">'+fmt(a.current_price||car.price)+'</div></div>'+
+          '<div style="padding:0 12px;display:flex;align-items:center"><i class="ti ti-arrow-right" style="color:#e8ecf0"></i></div>'+
+          '<div style="flex:1;text-align:center"><div class="alp-lbl">Objectif</div><div class="alp-val">'+fmt(a.target_price)+'</div></div>'+
+        '</div>'+
+        (a.start_price&&a.target_price?
+        '<div class="al-prog">'+
+          '<div style="display:flex;justify-content:space-between;font-size:10px;color:#94a3b8"><span>Départ '+fmt(a.start_price)+'</span><span>'+(prog|0)+'%</span></div>'+
+          '<div class="al-prog-bar"><div class="al-prog-fill" style="width:'+prog+'%"></div></div>'+
+        '</div>':'')+
+        '<div class="al-actions">'+
+          '<button class="al-btn view al-view-btn"><i class="ti ti-eye"></i>Voir</button>'+
+          '<button class="al-btn edit al-edit-btn"><i class="ti ti-pencil"></i>Modifier</button>'+
+          '<button class="al-btn del al-del-btn"><i class="ti ti-trash"></i></button>'+
+        '</div>';
+      // Event listeners
+      (function(alerte, annonce){
+        var viewBtn=d.querySelector('.al-view-btn');
+        var editBtn=d.querySelector('.al-edit-btn');
+        var delBtn=d.querySelector('.al-del-btn');
+        var sw=d.querySelector('.al-sw');
+        if(viewBtn) viewBtn.onclick=function(){ if(annonce&&annonce.id) openAnn(annonce); else showToast('Annonce non disponible'); };
+        if(editBtn) editBtn.onclick=function(){
+          var newPrice=prompt('Nouveau prix cible (€) :',alerte.target_price||'');
+          if(!newPrice||isNaN(parseInt(newPrice))) return;
+          fetch(API+'/api/alertes/'+alerte.id,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},body:JSON.stringify({target_price:parseInt(newPrice)})})
+            .then(function(){ showToast('✅ Alerte mise à jour'); loadAlertes(); })
+            .catch(function(){ showToast('❌ Erreur de mise à jour'); });
+        };
+        if(delBtn) delBtn.onclick=function(){
+          if(!confirm('Supprimer cette alerte ?')) return;
+          fetch(API+'/api/alertes/'+alerte.id,{method:'DELETE',headers:{'Authorization':'Bearer '+authToken}})
+            .then(function(){ showToast('🗑️ Alerte supprimée'); loadAlertes(); })
+            .catch(function(){ showToast('❌ Erreur'); });
+        };
+        if(sw) sw.onclick=function(){
+          var isOn=this.classList.contains('on');
+          this.className='al-sw '+(isOn?'off':'on');
+          fetch(API+'/api/alertes/'+alerte.id,{method:'PATCH',headers:{'Content-Type':'application/json','Authorization':'Bearer '+authToken},body:JSON.stringify({active:!isOn})}).catch(function(){});
+        };
+      })(a, car);
+      list.appendChild(d);
+    });
+  }catch(e){list.innerHTML='<div class="state-empty"><i class="ti ti-wifi-off"></i><h3>Erreur</h3><p>Impossible de charger les alertes.</p></div>';}
+}
+function createAlert(){closeSheet();showToast('🔔 Alerte créée !');}
+
+// ══ AUTH ══
+function refreshAuth(){
+  var g=document.getElementById('auth-guest');
+  var r=document.getElementById('auth-reg');
+  var i=document.getElementById('auth-in');
+  var b=document.getElementById('btn-auth');
+  if(authToken){
+    if(g)g.style.display='none';if(r)r.style.display='none';if(i)i.style.display='block';
+    if(b){b.classList.add('on');b.innerHTML='<i class="ti ti-user-check"></i>';}
+    var nn=document.getElementById('in-name');var ne=document.getElementById('in-email');
+    if(nn)nn.textContent=(authUser?.name)||'Connecté';
+    if(ne)ne.textContent=(authUser?.email)||'';
+  } else {
+    if(g)g.style.display='block';if(r)r.style.display='none';if(i)i.style.display='none';
+    if(b)b.classList.remove('on');
+  }
+}
+function switchAuth(v){
+  document.getElementById('auth-guest').style.display=v==='guest'?'block':'none';
+  document.getElementById('auth-reg').style.display=v==='reg'?'block':'none';
+}
+async function doLogin(){
+  var email=document.getElementById('au-email').value.trim();
+  var pw=document.getElementById('au-pw').value;
+  var err=document.getElementById('au-err');
+  err.style.display='none';
+  if(!email||!pw){err.textContent='Remplissez tous les champs';err.style.display='block';return;}
+  var btn=document.getElementById('au-btn');btn.textContent='Connexion…';btn.disabled=true;
+  try{
+    var res=await fetch(API+'/api/auth/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({email,password:pw})});
+    var data=await res.json();
+    if(data.token){
+      authToken=data.token;authUser=data.user;
+      sessionStorage.setItem('ae_auth',JSON.stringify(data));
+      refreshAuth();updateBadges();closeSheet();
+      showToast('✅ Bienvenue '+(data.user&&data.user.name?data.user.name:'')+' !');
+    } else {err.textContent=data.error||'Identifiants incorrects';err.style.display='block';}
+  }catch(e){err.textContent='Erreur de connexion';err.style.display='block';}
+  btn.textContent='Se connecter';btn.disabled=false;
+}
+async function doRegister(){
+  var name=document.getElementById('rg-name').value.trim();
+  var email=document.getElementById('rg-email').value.trim();
+  var pw=document.getElementById('rg-pw').value;
+  var err=document.getElementById('rg-err');err.style.display='none';
+  if(!name||!email||!pw){err.textContent='Remplissez tous les champs';err.style.display='block';return;}
+  try{
+    var res=await fetch(API+'/api/auth/register',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({name,email,password:pw})});
+    var data=await res.json();
+    if(data.token){
+      authToken=data.token;authUser=data.user;
+      sessionStorage.setItem('ae_auth',JSON.stringify(data));
+      closeSheet();refreshAuth();showToast('🎉 Compte créé !');
+    } else {err.textContent=data.error||'Erreur';err.style.display='block';}
+  }catch(e){err.textContent='Erreur de connexion';err.style.display='block';}
+}
+function doLogout(){
+  sessionStorage.removeItem('ae_auth');authToken=null;authUser=null;
+  closeSheet();refreshAuth();updateBadges();showToast('👋 Déconnecté');
+}
+
+// ══ INIT ══
+document.addEventListener('DOMContentLoaded',()=>{
+  document.querySelectorAll('.fab').forEach(f=>f.style.display='none');
+  loadCars({});
+  refreshAuth();
+  updateBadges();
+});
+
+// ══ PWA INSTALL ══
+var deferredPrompt = null;
+
+window.addEventListener('beforeinstallprompt', function(e) {
+  e.preventDefault();
+  deferredPrompt = e;
+  var dismissed = localStorage.getItem('pwa-dismissed');
+  if(window.matchMedia('(display-mode: standalone)').matches) return;
+  if(dismissed && Date.now()-parseInt(dismissed) < 3*24*60*60*1000) return;
+  setTimeout(function(){
+    var popup = document.getElementById('pwa-popup');
+    var ios = document.getElementById('pwa-ios-steps');
+    var btn = document.getElementById('pwa-install-btn');
+    if(ios) ios.style.display='none';
+    if(btn) btn.innerHTML='<i class="ti ti-download" style="font-size:15px"></i>Ajouter à l\'écran d\'accueil';
+    if(popup) popup.style.display='block';
+  }, 2500);
+});
+
+function showPwaPopup() {
+  // Don't show if dismissed in last 3 days
+  var dismissed = localStorage.getItem('pwa-dismissed');
+  if(dismissed && Date.now() - parseInt(dismissed) < 3*24*60*60*1000) return;
+  // Don't show if already installed
+  if(window.matchMedia('(display-mode: standalone)').matches) return;
+  setTimeout(function(){
+    document.getElementById('pwa-popup').style.display='block';
+  }, 3000);
+}
+
+function triggerInstall() {
+  if(deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then(function(r){
+      if(r.outcome==='accepted') {
+        document.getElementById('pwa-popup').style.display='none';
+        localStorage.setItem('pwa-dismissed', Date.now().toString());
+      }
+      deferredPrompt=null;
+    });
+  } else {
+    // iOS : show manual instructions
+    var ios=document.getElementById('pwa-ios-steps');
+    var btn=document.getElementById('pwa-install-btn');
+    if(ios) ios.style.display='block';
+    if(btn) btn.style.display='none';
+  }
+}
+
+// On iOS show popup too (no beforeinstallprompt)
+var isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+if(isIOS && !isStandalone) {
+  setTimeout(function(){
+    var dismissed=localStorage.getItem('pwa-dismissed');
+    if(!dismissed || Date.now()-parseInt(dismissed) > 3*24*60*60*1000) {
+      var ios=document.getElementById('pwa-ios-steps');
+      if(ios) ios.style.display='block';
+      var btn=document.getElementById('pwa-install-btn');
+      if(btn) btn.innerHTML='<i class="ti ti-info-circle"></i>Voir comment installer';
+      document.getElementById('pwa-popup').style.display='block';
+    }
+  }, 3000);
+}
+
+
+// ══ ANDROID BACK BUTTON ══
+function pushHistoryState(screenId){
+  history.pushState({screen: screenId}, '', '');
+}
+window.addEventListener('popstate', function(e){
+  var cur = screenStack[screenStack.length-1];
+  if(cur === 'search'){ closeSearch(); return; }
+  if(cur === 'picker'){ closePicker(); return; }
+  if(cur === 'ann'){ goBack(); return; }
+  if(cur === 'fav' || cur === 'al'){
+    goScreen('home', document.getElementById('bn-home'));
+    return;
+  }
+  // Close any open sheet
+  if(curSheet){ closeSheet(); history.pushState({}, '', ''); return; }
+});
+
+// Push a state whenever we navigate so back button works
+var _origGoScreen = goScreen;
+goScreen = function(id, navEl){
+  _origGoScreen(id, navEl);
+  history.pushState({screen: id}, '', '');
+};
+var _origOpenSearch = openSearch;
+openSearch = function(){
+  _origOpenSearch();
+  history.pushState({screen:'search'}, '', '');
+};
+var _origOpenPicker = openPicker;
+openPicker = function(key){
+  _origOpenPicker(key);
+  history.pushState({screen:'picker'}, '', '');
+};
+// Initial state
+history.replaceState({screen:'home'}, '', '');
+
+
+// ══ PWA MANIFEST ══
+(function(){
+  var manifest = {
+    name: 'AutoEurope',
+    short_name: 'AutoEurope',
+    start_url: '/index-mobile.html',
+    display: 'standalone',
+    background_color: '#0f1117',
+    theme_color: '#e52535',
+    icons: [{
+      src: 'https://placehold.co/192x192/e52535/ffffff?text=A',
+      sizes: '192x192',
+      type: 'image/png'
+    },{
+      src: 'https://placehold.co/512x512/e52535/ffffff?text=A',
+      sizes: '512x512',
+      type: 'image/png'
+    }]
+  };
+  var blob = new Blob([JSON.stringify(manifest)], {type:'application/json'});
+  var url = URL.createObjectURL(blob);
+  var link = document.createElement('link');
+  link.rel = 'manifest';
+  link.href = url;
+  document.head.appendChild(link);
+})();
+
+
+function showMesAnnonces(){
+  closeSheet();
+  showToast('📋 Mes annonces — Bientôt disponible');
+}
+
+</script>
+
+<!-- ══ PWA INSTALL POPUP ══ -->
+<div id="pwa-popup" style="display:none;position:fixed;bottom:calc(80px + env(safe-area-inset-bottom,0px) + 10px);left:12px;right:12px;background:#0f1117;border-radius:16px;padding:14px 16px;z-index:9000;box-shadow:0 8px 30px rgba(0,0,0,.35);animation:fadeUp .3s ease">
+  <button onclick="document.getElementById('pwa-popup').style.display='none';localStorage.setItem('pwa-dismissed','1')" style="position:absolute;top:10px;right:12px;background:none;border:none;color:rgba(255,255,255,.4);font-size:18px;line-height:1;cursor:pointer">×</button>
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+    <div style="width:44px;height:44px;border-radius:12px;background:#e52535;display:flex;align-items:center;justify-content:center;flex-shrink:0">
+      <span style="font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#fff">A</span>
+    </div>
+    <div>
+      <div style="font-size:14px;font-weight:700;color:#fff">Installer AutoEurope</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.45);font-weight:300;margin-top:1px">Accès rapide depuis votre écran d'accueil</div>
+    </div>
+  </div>
+  <div style="display:flex;gap:10px;margin-bottom:12px">
+    <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:rgba(255,255,255,.5);font-weight:300"><i class="ti ti-bell" style="font-size:13px;color:rgba(229,37,53,.7)"></i>Alertes prix</div>
+    <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:rgba(255,255,255,.5);font-weight:300"><i class="ti ti-heart" style="font-size:13px;color:rgba(229,37,53,.7)"></i>Favoris sauvegardés</div>
+    <div style="display:flex;align-items:center;gap:5px;font-size:11px;color:rgba(255,255,255,.5);font-weight:300"><i class="ti ti-bolt" style="font-size:13px;color:rgba(229,37,53,.7)"></i>Rapide</div>
+  </div>
+  <div id="pwa-ios-steps" style="display:none;background:rgba(255,255,255,.06);border-radius:10px;padding:10px 12px;margin-bottom:10px">
+    <div style="font-size:11px;color:rgba(255,255,255,.7);font-weight:300;line-height:1.8">
+      1. Appuyez sur <b style="color:#fff;font-weight:500">Partager</b> <i class="ti ti-share" style="font-size:11px"></i> dans Safari<br>
+      2. Puis sur <b style="color:#fff;font-weight:500">"Sur l'écran d'accueil"</b> <i class="ti ti-square-rounded-plus" style="font-size:11px"></i>
+    </div>
+  </div>
+  <button id="pwa-install-btn" onclick="triggerInstall()" style="width:100%;background:#e52535;color:#fff;border:none;border-radius:10px;padding:12px;font-size:14px;font-weight:700;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:7px;cursor:pointer">
+    <i class="ti ti-download"></i>Ajouter à l'écran d'accueil
+  </button>
+</div>
+</body>
+</html>

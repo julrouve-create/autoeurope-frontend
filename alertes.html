@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AutoEurope — Alertes Prix</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#111318;--red:#e52535;--red2:#c41e2c;--red-lt:rgba(229,37,53,.08);
+  --blue:#1d4ed8;--blue-lt:#eff6ff;
+  --green:#16a34a;--green-lt:#f0fdf4;
+  --amber:#d97706;--amber-lt:#fffbeb;
+  --gray:#64748b;--gray-lt:#f8fafc;
+  --border:#e8ecf0;--page:#f0f4f8;
+  --r:8px;--rl:12px;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--page);color:var(--ink);font-size:14px;-webkit-font-smoothing:antialiased;min-height:100vh}
+button{cursor:pointer;font-family:inherit}
+input,select{font-family:inherit;outline:none}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* TOPBAR */
+.topbar{background:var(--ink);height:56px;display:flex;align-items:center;padding:0 24px;gap:16px;position:sticky;top:0;z-index:100}
+.tb-back{width:36px;height:36px;border-radius:9px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.07);color:#fff;font-size:17px;display:flex;align-items:center;justify-content:center;text-decoration:none;flex-shrink:0}
+.tb-logo{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;color:#fff;letter-spacing:-.3px;flex-shrink:0}
+.tb-logo span{color:var(--red)}
+.tb-title{flex:1;text-align:center}
+.tb-t{font-family:'Syne',sans-serif;font-size:16px;font-weight:800;color:#fff;letter-spacing:-.3px}
+.tb-s{font-size:11px;color:rgba(255,255,255,.4);font-weight:300;margin-top:1px}
+.tb-add{width:36px;height:36px;border-radius:9px;background:var(--red);border:none;color:#fff;font-size:17px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0}
+
+/* STATS */
+.stats-bar{background:var(--ink);border-top:1px solid rgba(255,255,255,.06);display:flex;justify-content:center}
+.stat-block{text-align:center;padding:10px 36px;border-right:1px solid rgba(255,255,255,.08)}
+.stat-block:last-child{border-right:none}
+.sb-num{font-family:'Syne',sans-serif;font-size:22px;font-weight:800;color:#fff;line-height:1;letter-spacing:-.5px}
+.sb-lbl{font-size:10px;color:rgba(255,255,255,.35);font-weight:600;text-transform:uppercase;letter-spacing:.7px;margin-top:3px}
+
+/* LAYOUT */
+.page-body{max-width:1180px;margin:0 auto;padding:24px 24px 60px;display:grid;grid-template-columns:1fr 300px;gap:24px;align-items:start}
+.al-list{display:flex;flex-direction:column;gap:14px}
+.sidebar{display:flex;flex-direction:column;gap:14px;position:sticky;top:76px}
+
+/* SECTION LABEL */
+.sec-lbl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.8px;color:var(--gray);display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.sec-lbl i{font-size:14px;color:var(--red)}
+
+/* ALERT CARD */
+.al-card{background:#fff;border-radius:var(--rl);border:1px solid var(--border);overflow:hidden;transition:box-shadow .15s}
+.al-card:hover{box-shadow:0 4px 20px rgba(0,0,0,.07)}
+.al-card.triggered{border-color:var(--amber);border-width:1.5px}
+.al-card.paused{opacity:.65}
+.trig-banner{background:linear-gradient(90deg,var(--amber),#f59e0b);padding:10px 16px;display:flex;align-items:center;gap:10px}
+.tb2-icon{font-size:20px;flex-shrink:0}
+.tb2-text{flex:1}
+.tb2-title{font-size:12px;font-weight:700;color:#fff;margin-bottom:1px}
+.tb2-sub{font-size:11px;color:rgba(255,255,255,.8);font-weight:300}
+.tb2-cta{background:#fff;color:var(--amber);font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;border:none;flex-shrink:0;cursor:pointer}
+.al-top{display:grid;grid-template-columns:100px 1fr auto;border-bottom:1px solid var(--border)}
+.al-thumb{overflow:hidden;position:relative;background:#e8eef5;min-height:80px}
+.al-thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.al-src-badge{position:absolute;bottom:5px;left:5px;background:rgba(17,19,24,.7);color:#fff;font-size:8px;font-weight:700;padding:2px 6px;border-radius:3px}
+.al-info{padding:12px 14px;min-width:0}
+.al-make{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--gray);margin-bottom:2px}
+.al-title{font-size:15px;font-weight:700;color:var(--ink);letter-spacing:-.2px}
+.al-sub{font-size:12px;color:var(--gray);font-weight:300;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.al-toggle-wrap{padding:12px 16px;display:flex;align-items:center;gap:10px;flex-shrink:0}
+.al-toggle{width:44px;height:25px;border-radius:12px;border:none;position:relative;cursor:pointer;transition:background .2s}
+.al-toggle.on{background:var(--green)}.al-toggle.off{background:#e2e8f0}
+.al-toggle::after{content:"";position:absolute;top:3px;width:19px;height:19px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.2);transition:left .2s}
+.al-toggle.on::after{left:22px}.al-toggle.off::after{left:3px}
+.al-toggle-lbl{font-size:11px;color:var(--gray);font-weight:300;white-space:nowrap}
+.al-prices{padding:14px 16px;display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center;border-bottom:1px solid var(--border)}
+.al-p-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--gray);margin-bottom:3px}
+.al-p-price{font-size:24px;font-weight:700;color:var(--ink);letter-spacing:-.5px;line-height:1;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',system-ui,sans-serif}
+.al-p-price.good{color:var(--green)}
+.al-p-date{font-size:10px;color:var(--gray);font-weight:300;margin-top:3px}
+.al-p-mid{display:flex;flex-direction:column;align-items:center;gap:4px}
+.al-trend{font-size:11px;font-weight:600;display:flex;align-items:center;gap:3px}
+.al-trend.down{color:var(--green)}.al-trend.up{color:var(--red)}.al-trend.flat{color:var(--gray)}
+.al-p-gap{font-size:11px;font-weight:300;margin-top:3px;text-align:right}
+.al-p-gap.close{color:var(--amber)}.al-p-gap.far{color:var(--gray)}
+.al-progress{padding:10px 16px;border-bottom:1px solid var(--border)}
+.al-prog-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--gray);font-weight:300;margin-bottom:5px}
+.al-prog-bar{height:6px;background:rgba(0,0,0,.07);border-radius:3px;overflow:hidden}
+.al-prog-fill{height:100%;border-radius:3px;transition:width .6s}
+.alpf-on{background:linear-gradient(90deg,var(--green),#22c55e)}
+.alpf-close{background:linear-gradient(90deg,var(--amber),#f59e0b)}
+.alpf-far{background:linear-gradient(90deg,#94a3b8,#64748b)}
+.al-sparkline{padding:10px 16px;border-bottom:1px solid var(--border);display:grid;grid-template-columns:1fr auto;align-items:center;gap:16px}
+.al-sl-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--gray);margin-bottom:6px}
+.al-history{padding:10px 16px;border-bottom:1px solid var(--border);display:flex;flex-direction:column;gap:5px}
+.al-h-item{display:flex;align-items:center;gap:8px;font-size:12px}
+.al-h-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.al-h-dot.drop{background:var(--green)}.al-h-dot.rise{background:var(--red)}.al-h-dot.stable{background:var(--gray)}
+.al-h-text{flex:1;color:var(--gray);font-weight:300}
+.al-h-date{font-size:11px;color:var(--gray);font-weight:300;white-space:nowrap}
+.al-actions{display:flex;gap:8px;padding:12px 16px}
+.al-btn{flex:1;padding:9px 0;border-radius:var(--r);font-size:12px;font-weight:600;font-family:inherit;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:5px;transition:all .15s}
+.al-btn i{font-size:13px}
+.alb-view{background:var(--blue-lt);color:var(--blue)}.alb-view:hover{background:var(--blue);color:#fff}
+.alb-edit{background:var(--gray-lt);color:var(--gray);border:1px solid var(--border)}.alb-edit:hover{background:var(--ink);color:#fff}
+.alb-del{background:#fef2f2;color:#991b1b;flex:0;padding:9px 14px}.alb-del:hover{background:#dc2626;color:#fff}
+
+/* SIDEBAR */
+.widget{background:#fff;border-radius:var(--rl);border:1px solid var(--border);overflow:hidden}
+.w-title{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--gray);padding:14px 16px 0;display:flex;align-items:center;gap:6px}
+.w-title i{font-size:15px;color:var(--red)}
+.w-body{padding:12px 16px 14px}
+.f-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px;color:var(--gray);margin-bottom:5px}
+.f-inp,.f-sel{width:100%;border:1.5px solid var(--border);border-radius:var(--r);padding:9px 12px;font-size:13px;font-weight:300;color:var(--ink);background:var(--gray-lt);appearance:none;transition:all .15s;margin-bottom:10px}
+.f-inp:focus,.f-sel:focus{border-color:var(--red);background:#fff;box-shadow:0 0 0 3px var(--red-lt)}
+.f-torque-est{background:var(--red-lt);border:1px solid rgba(229,37,53,.15);border-radius:var(--r);padding:10px 12px;display:flex;align-items:flex-start;gap:8px;margin-bottom:10px}
+.fte-t{background:var(--red);color:#fff;font-family:'Syne',sans-serif;font-size:10px;font-weight:800;width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.f-save-btn{width:100%;background:var(--red);color:#fff;border:none;border-radius:var(--r);padding:10px;font-size:13px;font-weight:600;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;transition:all .15s}
+.f-save-btn:hover{background:var(--red2)}
+.notif-opts{display:flex;flex-direction:column;gap:6px}
+.notif-opt{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--gray-lt);cursor:pointer;transition:all .15s}
+.notif-opt.on{border-color:var(--green);background:var(--green-lt)}
+.no-left{display:flex;align-items:center;gap:8px}
+.no-icon{width:26px;height:26px;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:13px;background:#fff;border:1px solid var(--border)}
+.no-check{width:17px;height:17px;border-radius:50%;border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:#fff;transition:all .2s}
+.notif-opt.on .no-check{background:var(--green);border-color:var(--green)}
+.stat-rows{display:flex;flex-direction:column;gap:0}
+.stat-row{display:flex;justify-content:space-between;align-items:center;font-size:13px;padding:8px 0;border-bottom:1px solid var(--border)}
+.stat-row:last-child{border-bottom:none}
+.stat-row-lbl{color:var(--gray);font-weight:300;display:flex;align-items:center;gap:5px;font-size:12px}
+.stat-row-val{font-weight:600;color:var(--ink);font-size:13px}
+
+/* EMPTY */
+.empty{text-align:center;padding:80px 24px;background:#fff;border-radius:var(--rl);border:1px solid var(--border)}
+.empty i{font-size:52px;color:var(--gray);opacity:.25;display:block;margin:0 auto 12px}
+.empty-title{font-size:18px;font-weight:700;color:var(--ink);margin-bottom:8px}
+.empty-sub{font-size:14px;color:var(--gray);font-weight:300;line-height:1.7;margin-bottom:20px}
+.empty-btn{background:var(--red);color:#fff;border:none;border-radius:var(--r);padding:12px 24px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+
+/* TOAST */
+.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;font-size:13px;font-weight:500;padding:10px 20px;border-radius:var(--r);box-shadow:0 4px 16px rgba(0,0,0,.2);z-index:500;display:none;white-space:nowrap}
+
+.loading{text-align:center;padding:80px;color:var(--gray)}
+.loading i{font-size:32px;display:block;margin:0 auto 12px;animation:spin 1s linear infinite}
+
+@media(max-width:900px){
+  .page-body{grid-template-columns:1fr;padding:12px 12px 60px}
+  .sidebar{position:static}
+  .al-top{grid-template-columns:80px 1fr auto}
+  .al-prices{grid-template-columns:1fr auto 1fr;gap:8px}
+  .al-p-price{font-size:18px}
+}
+
+
+
+
+
+
+
+.mobile-bottom-nav{display:none}
+
+@media(max-width:768px){
+  .topbar{padding:8px 12px}
+  .topbar .tb-nav,.hn-nav{display:none !important}
+  .page-body{grid-template-columns:1fr !important;padding:10px 10px 80px !important}
+  .side-col,.sidebar-sticky{display:none !important}
+  body{padding-bottom:70px !important}
+  .mobile-bottom-nav{display:flex !important;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid var(--border);padding:8px 0 calc(8px + env(safe-area-inset-bottom,0px));z-index:200;justify-content:space-around}
+  .mbn-item{display:flex;flex-direction:column;align-items:center;gap:3px;color:var(--gray);font-size:10px;font-weight:500;cursor:pointer;padding:2px 10px;flex:1}
+  .mbn-item.on{color:var(--red)}
+  .mbn-item i{font-size:22px}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="tb-back" href="index.html"><i class="ti ti-arrow-left"></i></a>
+  <div class="tb-logo">Auto<span>Europe</span></div>
+  <div class="tb-title">
+    <div class="tb-t">Alertes prix</div>
+    <div class="tb-s" id="page-sub">Chargement…</div>
+  </div>
+  <button class="tb-add" onclick="openAddModal()"><i class="ti ti-plus"></i></button>
+</div>
+
+<div class="stats-bar">
+  <div class="stat-block"><div class="sb-num" id="sb-total">—</div><div class="sb-lbl">Total</div></div>
+  <div class="stat-block"><div class="sb-num" style="color:var(--amber)" id="sb-trig">—</div><div class="sb-lbl">Déclenchée</div></div>
+  <div class="stat-block"><div class="sb-num" style="color:#22c55e" id="sb-active">—</div><div class="sb-lbl">Active</div></div>
+  <div class="stat-block"><div class="sb-num" style="color:var(--gray)" id="sb-paused">—</div><div class="sb-lbl">En pause</div></div>
+</div>
+
+<div class="page-body">
+  <div class="al-list" id="al-list">
+    <div class="loading"><i class="ti ti-loader"></i>Chargement de vos alertes…</div>
+  </div>
+  <aside class="sidebar">
+    <!-- Quick add -->
+    <div class="widget">
+      <div class="w-title"><i class="ti ti-bell-plus"></i>Nouvelle alerte rapide</div>
+      <div class="w-body">
+        <div class="f-lbl">Véhicule</div>
+        <select class="f-sel" id="sb-vehicle" onchange="sbUpdateEst()">
+          <option value="">Depuis mes favoris…</option>
+          <option value="yaris">Toyota Yaris 3 — 7 400 €</option>
+          <option value="golf">VW Golf 7 TDI — 8 900 €</option>
+          <option value="clio">Renault Clio V — 9 800 €</option>
+        </select>
+        <div class="f-torque-est" id="sb-torque-est" style="display:none">
+          <div class="fte-t">T</div>
+          <div style="flex:1"><div style="font-size:12px;font-weight:500;color:var(--ink)" id="sb-te-main">Analyse Torque</div><div style="font-size:11px;color:var(--gray);font-weight:300;margin-top:1px" id="sb-te-sub">…</div></div>
+        </div>
+        <div class="f-lbl">Prix cible (€)</div>
+        <input class="f-inp" type="number" id="sb-target" placeholder="Ex : 7 000">
+        <button class="f-save-btn" onclick="sbSave()"><i class="ti ti-bell-check"></i>Créer l'alerte</button>
+      </div>
+    </div>
+    <!-- Stats -->
+    <div class="widget">
+      <div class="w-title"><i class="ti ti-chart-bar"></i>Statistiques</div>
+      <div class="w-body">
+        <div class="stat-rows">
+          <div class="stat-row"><span class="stat-row-lbl"><i class="ti ti-trending-down"></i>Baisse moyenne</span><span class="stat-row-val" style="color:var(--green)">−320 €</span></div>
+          <div class="stat-row"><span class="stat-row-lbl"><i class="ti ti-clock"></i>Délai moyen</span><span class="stat-row-val">18 jours</span></div>
+          <div class="stat-row"><span class="stat-row-lbl"><i class="ti ti-refresh"></i>Vérification</span><span class="stat-row-val">Toutes les 6h</span></div>
+        </div>
+      </div>
+    </div>
+    <!-- Notifs -->
+    <div class="widget">
+      <div class="w-title"><i class="ti ti-bell"></i>Notifications</div>
+      <div class="w-body">
+        <div class="notif-opts">
+          <div class="notif-opt on" onclick="this.classList.toggle('on');this.querySelector('.no-check').textContent=this.classList.contains('on')?'✓':''">
+            <div class="no-left"><div class="no-icon"><i class="ti ti-bell"></i></div><div><div style="font-size:12px;font-weight:500;color:var(--ink)">Push</div></div></div>
+            <div class="no-check">✓</div>
+          </div>
+          <div class="notif-opt on" onclick="this.classList.toggle('on');this.querySelector('.no-check').textContent=this.classList.contains('on')?'✓':''">
+            <div class="no-left"><div class="no-icon"><i class="ti ti-mail"></i></div><div><div style="font-size:12px;font-weight:500;color:var(--ink)">Email</div></div></div>
+            <div class="no-check">✓</div>
+          </div>
+          <div class="notif-opt" onclick="this.classList.toggle('on');this.querySelector('.no-check').textContent=this.classList.contains('on')?'✓':''">
+            <div class="no-left"><div class="no-icon"><i class="ti ti-brand-whatsapp"></i></div><div><div style="font-size:12px;font-weight:500;color:var(--ink)">WhatsApp</div></div></div>
+            <div class="no-check"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Torque -->
+    <div class="widget" style="background:var(--ink)">
+      <div class="w-title" style="color:rgba(255,255,255,.45)"><span style="background:var(--red);color:#fff;font-family:'Syne',sans-serif;font-size:10px;font-weight:800;width:20px;height:20px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;margin-right:4px">T</span>Conseil Torque</div>
+      <div class="w-body">
+        <p style="font-size:12px;color:rgba(255,255,255,.55);font-weight:300;line-height:1.6;margin-bottom:10px">Torque surveille vos alertes 24h/24 et analyse les tendances de prix pour maximiser vos chances.</p>
+        <button style="width:100%;background:rgba(255,255,255,.08);color:rgba(255,255,255,.8);border:1px solid rgba(255,255,255,.12);border-radius:var(--r);padding:9px;font-size:12px;font-weight:500;font-family:inherit;cursor:pointer" onclick="showToast('🤖 Analyse lancée…')">Voir les tendances</button>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<!-- ADD MODAL -->
+<div style="position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:none;align-items:center;justify-content:center" id="add-modal">
+  <div style="background:#fff;border-radius:16px;width:500px;max-width:92vw;max-height:90vh;display:flex;flex-direction:column;overflow:hidden">
+    <div style="padding:18px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0">
+      <div style="font-size:16px;font-weight:700;color:var(--ink);display:flex;align-items:center;gap:8px"><i class="ti ti-bell-plus" style="color:var(--red)"></i>Nouvelle alerte prix</div>
+      <button onclick="closeAddModal()" style="background:none;border:none;color:var(--gray);font-size:24px;cursor:pointer;line-height:1">×</button>
+    </div>
+    <div style="padding:20px 24px;overflow-y:auto;flex:1">
+      <div style="margin-bottom:12px">
+        <div class="f-lbl">Véhicule suivi</div>
+        <select class="f-sel" id="modal-vehicle" onchange="modalUpdateEst()">
+          <option value="">Choisir depuis mes favoris…</option>
+          <option value="yaris">Toyota Yaris 3 — 7 400 € · La Centrale 🇫🇷</option>
+          <option value="golf">VW Golf 7 TDI — 8 900 € · Mobile.de 🇩🇪</option>
+          <option value="clio">Renault Clio V — 9 800 € · La Centrale 🇫🇷</option>
+        </select>
+      </div>
+      <div class="f-torque-est" id="modal-torque-est" style="display:none">
+        <div class="fte-t">T</div>
+        <div style="flex:1"><div style="font-size:12px;font-weight:500;color:var(--ink)" id="modal-te-main">Analyse Torque</div><div style="font-size:11px;color:var(--gray);font-weight:300;margin-top:1px" id="modal-te-sub">…</div></div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div class="f-lbl">Prix cible (€)</div>
+        <input class="f-inp" type="number" id="modal-target" placeholder="Ex : 7 000" oninput="modalUpdateGap()" style="margin-bottom:5px">
+        <div id="modal-gap" style="font-size:12px;color:var(--gray);font-weight:300;display:none"></div>
+      </div>
+      <div style="margin-bottom:12px">
+        <div class="f-lbl">Déclencher si le prix baisse de</div>
+        <select class="f-sel">
+          <option>N'importe quelle baisse</option><option>≥ 200 €</option><option selected>≥ 500 €</option><option>≥ 1 000 €</option>
+        </select>
+      </div>
+      <div>
+        <div class="f-lbl">Notifications</div>
+        <div class="notif-opts">
+          <div class="notif-opt on" onclick="this.classList.toggle('on');this.querySelector('.no-check').textContent=this.classList.contains('on')?'✓':''">
+            <div class="no-left"><div class="no-icon"><i class="ti ti-bell"></i></div><div><div style="font-size:12px;font-weight:500;color:var(--ink)">Push</div></div></div>
+            <div class="no-check">✓</div>
+          </div>
+          <div class="notif-opt on" onclick="this.classList.toggle('on');this.querySelector('.no-check').textContent=this.classList.contains('on')?'✓':''">
+            <div class="no-left"><div class="no-icon"><i class="ti ti-mail"></i></div><div><div style="font-size:12px;font-weight:500;color:var(--ink)">Email</div></div></div>
+            <div class="no-check">✓</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div style="padding:14px 24px;border-top:1px solid var(--border);display:flex;gap:10px;flex-shrink:0">
+      <button onclick="closeAddModal()" style="flex:1;background:#fff;color:var(--gray);border:1px solid var(--border);border-radius:var(--r);padding:12px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer">Annuler</button>
+      <button onclick="modalSave()" style="flex:2;background:var(--red);color:#fff;border:none;border-radius:var(--r);padding:12px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px"><i class="ti ti-bell-check"></i>Créer l'alerte</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const API='https://autoeurope-backend-production.up.railway.app';
+var CAR_IMAGES={'toyota yaris':'https://images.unsplash.com/photo-1619767886558-efdc259cde1a?w=480&q=80','volkswagen golf':'https://images.unsplash.com/photo-1471479917193-f00955256257?w=480&q=80','renault clio':'https://images.unsplash.com/photo-1542362567-b07e54358753?w=480&q=80','bmw serie 1':'https://images.unsplash.com/photo-1555215695-3004980ad54e?w=480&q=80'};
+var DEF_IMG='https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=480&q=80';
+function getCarImage(make,model){var k=((make||'')+' '+(model||'')).toLowerCase();for(var x in CAR_IMAGES){if(k.includes(x.split(' ')[0]))return CAR_IMAGES[x];}return DEF_IMG;}
+
+var authToken=null,authUser=null;
+try{var _s=sessionStorage.getItem('ae_auth');if(_s){var _p=JSON.parse(_s);authToken=_p.token;authUser=_p.user;}}catch(e){}
+
+var allAlerts=[];
+
+async function loadAlerts(){
+  if(!authToken){
+    document.getElementById('al-list').innerHTML='<div class="empty"><i class="ti ti-lock"></i><div class="empty-title">Connexion requise</div><div class="empty-sub">Connectez-vous pour voir vos alertes.</div><button class="empty-btn" onclick="window.location.href=\'index.html\'"><i class="ti ti-home"></i>Aller à l\'accueil</button></div>';
+    return;
+  }
+  try{
+    var res=await fetch(API+'/api/alertes',{headers:{'Authorization':'Bearer '+authToken}});
+    var data=await res.json();
+    allAlerts=(data.alertes||[]).map(function(al){
+      var a=al.annonces||al;
+      var curP=al.current_price||a.price||0;
+      var startP=al.start_price||curP;
+      var targetP=al.target_price||Math.round(curP*.95);
+      return{
+        id:al.id,make:a.make||'Véhicule',model:a.model||'',
+        sub:(a.year||'')+(a.km?' · '+Math.round(a.km/1000)+'k km':'')+(a.source?' · '+a.source:''),
+        img:(a.photos&&a.photos[0])||getCarImage(a.make,a.model),
+        current:curP,target:targetP,start:startP,
+        active:al.active!==false,triggered:curP<=targetP,
+        history:[{type:'stable',text:'Alerte créée',date:'À la création'}],
+        prices:[startP,startP,Math.round((startP+curP)/2),curP,curP,curP,curP,curP],
+      };
+    });
+    buildPage();
+  }catch(e){
+    document.getElementById('al-list').innerHTML='<div class="empty"><i class="ti ti-wifi-off"></i><div class="empty-title">Erreur de chargement</div><div class="empty-sub">Impossible de charger vos alertes.</div><button class="empty-btn" onclick="loadAlerts()"><i class="ti ti-refresh"></i>Réessayer</button></div>';
+  }
+}
+
+function buildPage(){
+  var data=allAlerts;
+  var trig=data.filter(function(a){return a.triggered&&a.active;});
+  var act=data.filter(function(a){return a.active&&!a.triggered;});
+  var pau=data.filter(function(a){return !a.active;});
+  document.getElementById('sb-total').textContent=data.length;
+  document.getElementById('sb-trig').textContent=trig.length;
+  document.getElementById('sb-active').textContent=act.length;
+  document.getElementById('sb-paused').textContent=pau.length;
+  document.getElementById('page-sub').textContent=data.length+' alerte'+(data.length>1?'s':'')+(trig.length?' · '+trig.length+' déclenchée':'');
+
+  var list=document.getElementById('al-list');
+  if(!data.length){
+    list.innerHTML='<div class="empty"><i class="ti ti-bell-off"></i><div class="empty-title">Aucune alerte</div><div class="empty-sub">Créez votre première alerte pour être notifié des baisses de prix.</div><button class="empty-btn" onclick="openAddModal()"><i class="ti ti-bell-plus"></i>Créer une alerte</button></div>';
+    return;
+  }
+
+  var html='';
+  if(trig.length){html+='<div class="sec-lbl"><i class="ti ti-bell-ringing"></i>Déclenchées</div>';trig.forEach(function(a){html+=buildCard(a);});}
+  if(act.length){html+='<div class="sec-lbl"'+(trig.length?' style="margin-top:8px"':'')+'>'+' <i class="ti ti-bell"></i>Actives</div>';act.forEach(function(a){html+=buildCard(a);});}
+  if(pau.length){html+='<div class="sec-lbl" style="margin-top:8px"><i class="ti ti-bell-off"></i>En pause</div>';pau.forEach(function(a){html+=buildCard(a);});}
+  html+='<button id="al-add-btn" style="width:100%;padding:14px;border:1.5px dashed var(--border);border-radius:var(--rl);background:transparent;font-size:13px;font-weight:500;color:var(--gray);display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer"><i class="ti ti-plus" style="font-size:16px"></i>Créer une nouvelle alerte</button>';
+  list.innerHTML=html;
+
+  setTimeout(function(){
+    var b=document.getElementById('al-add-btn');if(b)b.onclick=openAddModal;
+    list.querySelectorAll('.al-toggle').forEach(function(btn){btn.onclick=function(){toggleAlert(this.dataset.aid,this);};});
+    list.querySelectorAll('.alb-view').forEach(function(btn){btn.onclick=function(){showToast('👁️ Voir l\'annonce…');};});
+    list.querySelectorAll('.alb-edit').forEach(function(btn){btn.onclick=function(){showToast('✏️ Modification…');};});
+    list.querySelectorAll('.alb-del').forEach(function(btn){btn.onclick=function(){deleteAlert(this.dataset.aid);};});
+  },0);
+}
+
+function sparkline(prices,good){
+  var mn=Math.min.apply(null,prices),mx=Math.max.apply(null,prices),rng=mx-mn||1;
+  var w=200,h=48,p=4;
+  var pts=prices.map(function(v,i){return(p+(i/(prices.length-1))*(w-p*2))+','+(h-p-((v-mn)/rng)*(h-p*2));});
+  var poly=pts.join(' '),last=pts[pts.length-1].split(',');
+  var fill='0,'+h+' '+poly+' '+w+','+h;
+  var col=good?'#16a34a':'#64748b';
+  var id='g'+Math.random().toString(36).substr(2,5);
+  return '<svg style="width:100%;height:48px;display:block" viewBox="0 0 '+w+' '+h+'" preserveAspectRatio="none"><defs><linearGradient id="'+id+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="'+col+'" stop-opacity=".15"/><stop offset="100%" stop-color="'+col+'" stop-opacity="0"/></linearGradient></defs><polygon points="'+fill+'" fill="url(#'+id+')"/><polyline points="'+poly+'" fill="none" stroke="'+col+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="'+last[0]+'" cy="'+last[1]+'" r="3.5" fill="'+col+'"/></svg>';
+}
+
+function buildCard(a){
+  var gap=a.current-a.target;
+  var pct=Math.max(0,Math.min(100,a.start===a.target?100:Math.round(((a.start-a.current)/(a.start-a.target))*100)));
+  var pfCls=pct>=100?'alpf-on':pct>=50?'alpf-close':'alpf-far';
+  var gapCls=gap<=300?'close':'far';
+  var delta=a.prices[a.prices.length-1]-a.prices[0];
+  var tCls=delta<0?'down':delta>0?'up':'flat';
+  var tIcon=delta<0?'ti-trending-down':delta>0?'ti-trending-up':'ti-minus';
+  var tTxt=delta<0?'−'+Math.abs(delta).toLocaleString('fr-FR')+' €':delta>0?'+'+delta.toLocaleString('fr-FR')+' €':'Stable';
+  var tCol=delta<0?'var(--green)':delta>0?'var(--red)':'var(--gray)';
+  return '<div class="al-card'+(a.triggered?' triggered':'')+(a.active?'':' paused')+'" id="alcard-'+a.id+'">'
+    +(a.triggered?'<div class="trig-banner"><div class="tb2-icon">🔔</div><div class="tb2-text"><div class="tb2-title">Prix objectif atteint !</div><div class="tb2-sub">'+a.make+' '+a.model+' · '+a.current.toLocaleString('fr-FR')+' € · Cible '+a.target.toLocaleString('fr-FR')+' € dépassée</div></div><button class="tb2-cta">Voir →</button></div>':'')
+    +'<div class="al-top">'
+      +'<div class="al-thumb"><img src="'+a.img+'" loading="lazy"><div class="al-src-badge">'+a.sub.split('·').slice(-1)[0].trim()+'</div></div>'
+      +'<div class="al-info"><div class="al-make">'+a.make+'</div><div class="al-title">'+a.model+'</div><div class="al-sub">'+a.sub+'</div></div>'
+      +'<div class="al-toggle-wrap"><span class="al-toggle-lbl">'+(a.active?'Active':'En pause')+'</span><button class="al-toggle '+(a.active?'on':'off')+'" data-aid="'+a.id+'"></button></div>'
+    +'</div>'
+    +'<div class="al-prices">'
+      +'<div><div class="al-p-lbl">Prix actuel</div><div class="al-p-price'+(gap<=0?' good':'')+'">'+a.current.toLocaleString('fr-FR')+' €</div><div class="al-p-date">Vérifié récemment</div></div>'
+      +'<div class="al-p-mid"><i class="ti '+tIcon+'" style="font-size:22px;color:'+tCol+'"></i><div class="al-trend '+tCls+'"><i class="ti '+tIcon+'" style="font-size:12px"></i>'+tTxt+'</div></div>'
+      +'<div style="text-align:right"><div class="al-p-lbl">Objectif</div><div class="al-p-price'+(gap<=0?' good':'')+'">'+a.target.toLocaleString('fr-FR')+' €</div><div class="al-p-gap '+gapCls+'">'+(gap<=0?'✓ Atteint !':'Reste −'+gap.toLocaleString('fr-FR')+' €')+'</div></div>'
+    +'</div>'
+    +'<div class="al-progress"><div class="al-prog-labels"><span>Départ '+a.start.toLocaleString('fr-FR')+' €</span><span>'+pct+'% vers l\'objectif</span></div><div class="al-prog-bar"><div class="al-prog-fill '+pfCls+'" style="width:'+pct+'%"></div></div></div>'
+    +'<div class="al-sparkline"><div><div class="al-sl-lbl">Évolution prix (30j)</div>'+sparkline(a.prices,delta<=0)+'</div><div class="al-trend '+tCls+'"><i class="ti '+tIcon+'" style="font-size:16px"></i>'+tTxt+'</div></div>'
+    +'<div class="al-history">'+a.history.map(function(h){return'<div class="al-h-item"><div class="al-h-dot '+h.type+'"></div><div class="al-h-text">'+h.text+'</div><div class="al-h-date">'+h.date+'</div></div>';}).join('')+'</div>'
+    +'<div class="al-actions"><button class="al-btn alb-view"><i class="ti ti-eye"></i>Voir l\'annonce</button><button class="al-btn alb-edit"><i class="ti ti-pencil"></i>Modifier</button><button class="al-btn alb-del" data-aid="'+a.id+'"><i class="ti ti-trash"></i></button></div>'
+  +'</div>';
+}
+
+function toggleAlert(id,btn){
+  var a=allAlerts.find(function(x){return String(x.id)===String(id);});if(!a)return;
+  a.active=!a.active;btn.className='al-toggle '+(a.active?'on':'off');
+  showToast(a.active?'🔔 Alerte activée':'🔕 Alerte mise en pause');
+  setTimeout(buildPage,400);
+}
+
+async function deleteAlert(id){
+  try{
+    await fetch(API+'/api/alertes/'+id,{method:'DELETE',headers:{'Authorization':'Bearer '+authToken}});
+    allAlerts=allAlerts.filter(function(a){return String(a.id)!==String(id);});
+    buildPage();showToast('🗑️ Alerte supprimée');
+  }catch(e){showToast('❌ Erreur');}
+}
+
+// Add modal
+function openAddModal(){document.getElementById('add-modal').style.display='flex';}
+function closeAddModal(){document.getElementById('add-modal').style.display='none';}
+
+var vData={yaris:{price:7400,est:'Fourchette marché : 6 900–7 800 €. Cible ≤ 7 000 € atteignable.'},golf:{price:8900,est:'Fourchette : 8 200–9 400 €. Cible ≤ 8 500 € réaliste.'},clio:{price:9800,est:'Clio V en baisse. Cible ≤ 9 200 € probable sous 2 mois.'}};
+
+function modalUpdateEst(){
+  var v=document.getElementById('modal-vehicle').value,te=document.getElementById('modal-torque-est');
+  if(v&&vData[v]){te.style.display='flex';document.getElementById('modal-te-main').textContent='Analyse Torque';document.getElementById('modal-te-sub').textContent=vData[v].est;document.getElementById('modal-target').placeholder=Math.round(vData[v].price*.95).toLocaleString('fr-FR');}
+  else te.style.display='none';
+  modalUpdateGap();
+}
+function modalUpdateGap(){
+  var v=document.getElementById('modal-vehicle').value,t=parseInt(document.getElementById('modal-target').value),pr=document.getElementById('modal-gap');
+  if(v&&vData[v]&&t){var g=vData[v].price-t;pr.style.display='block';pr.innerHTML=g<=0?'<span style="color:var(--green)">✅ Objectif déjà atteint !</span>':'Il faut une baisse de <strong>'+g.toLocaleString('fr-FR')+' €</strong> ('+Math.round(g/vData[v].price*100)+'%) pour déclencher.';}
+  else pr.style.display='none';
+}
+function modalSave(){
+  var v=document.getElementById('modal-vehicle').value,t=parseInt(document.getElementById('modal-target').value);
+  if(!v){showToast('⚠️ Sélectionnez un véhicule');return;}
+  if(!t||t<500){showToast('⚠️ Prix cible invalide');return;}
+  closeAddModal();showToast('🔔 Alerte créée !');
+}
+function sbUpdateEst(){
+  var v=document.getElementById('sb-vehicle').value,te=document.getElementById('sb-torque-est');
+  if(v&&vData[v]){te.style.display='flex';document.getElementById('sb-te-main').textContent='Analyse Torque';document.getElementById('sb-te-sub').textContent=vData[v].est;document.getElementById('sb-target').placeholder=Math.round(vData[v].price*.95).toLocaleString('fr-FR');}
+  else te.style.display='none';
+}
+function sbSave(){
+  var v=document.getElementById('sb-vehicle').value,t=parseInt(document.getElementById('sb-target').value);
+  if(!v){showToast('⚠️ Sélectionnez un véhicule');return;}
+  if(!t||t<500){showToast('⚠️ Prix cible invalide');return;}
+  showToast('🔔 Alerte créée !');
+  document.getElementById('sb-vehicle').value='';document.getElementById('sb-target').value='';document.getElementById('sb-torque-est').style.display='none';
+}
+
+document.getElementById('add-modal').addEventListener('click',function(e){if(e.target===this)closeAddModal();});
+
+var toastT;
+function showToast(msg){var t=document.getElementById('toast');t.textContent=msg;t.style.display='block';clearTimeout(toastT);toastT=setTimeout(function(){t.style.display='none';},2500);}
+
+loadAlerts();
+</script>
+
+<!-- ══ MOBILE BOTTOM NAV ══ -->
+<nav class="mobile-bottom-nav" style="display:flex;position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #e8ecf0;padding:6px 0 calc(6px + env(safe-area-inset-bottom,0px));z-index:200;justify-content:space-around;align-items:flex-end;box-shadow:0 -2px 16px rgba(0,0,0,.06)">
+  <div onclick="window.location.href='index-mobile.html'" style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#94a3b8;font-size:10px;font-weight:500;padding:2px 10px;flex:1">
+    <i class="ti ti-home" style="font-size:22px"></i><span>Accueil</span>
+  </div>
+  <div onclick="window.location.href='index-mobile.html'" style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#94a3b8;font-size:10px;font-weight:500;padding:2px 10px;flex:1">
+    <i class="ti ti-search" style="font-size:22px"></i><span>Recherche</span>
+  </div>
+  <div onclick="window.location.href='deposer.html'" style="display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;padding:2px 0">
+    <div style="width:44px;height:44px;border-radius:14px;background:#e52535;color:#fff;font-size:22px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(229,37,53,.35);margin-top:-16px">
+      <i class="ti ti-plus"></i>
+    </div>
+    <span style="font-size:10px;font-weight:600;color:#e52535">Déposer</span>
+  </div>
+  <div onclick="window.location.href='favoris.html'" style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#94a3b8;font-size:10px;font-weight:500;padding:2px 10px;flex:1">
+    <i class="ti ti-heart" style="font-size:22px"></i><span>Favoris</span>
+  </div>
+  <div onclick="window.location.href='alertes.html'" style="display:flex;flex-direction:column;align-items:center;gap:3px;color:#e52535;font-size:10px;font-weight:500;padding:2px 10px;flex:1">
+    <i class="ti ti-bell" style="font-size:22px"></i><span>Alertes</span>
+  </div>
+</nav>
+</body>
+</html>
